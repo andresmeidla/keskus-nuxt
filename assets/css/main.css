@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+  Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+.hover-styled {
+  @apply duration-75 hover:bg-white hover:shadow-md hover:drop-shadow-lg hover:transition-all
+}
+
+/*
+.menu-color {
+  background-color: #252d3f;
+}
+
+:root {
+  --fk-max-width-input: 100rem;
+}
+
+#__nuxt {
+  min-height: 100vh;
+}
+
+#keskus {
+  min-height: 100vh;
+}
+
+.card {
+  @apply bg-base-100 opacity-95 shadow-md rounded-md;
+}
+
+a {
+  @apply text-primary;
+}
+
+a:link {
+  text-decoration: none;
+}
+a:link:visited {
+  text-decoration: none;
+}
+
+.text-muted {
+  @apply text-slate-500;
+}
+
+.hover-clickable {
+  @apply hover:opacity-70;
+}*/

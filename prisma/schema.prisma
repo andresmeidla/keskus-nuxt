@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+  output =  env("PRISMA_OUT")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int                @id @default(autoincrement())
+  firstname         String
+  lastname          String
+  username          String             @unique
+  password          String
+  nickname          String?
+  description       String?
+  telephone         String?
+  email             String?
+  emailNotification Boolean            @default(true)
+  role              String             @default("USER")
+  lastLogin         DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now())
+  commentLikes      CommentLike[]
+  comments          Comment[]
+  eventAttendances  EventAttendance[]
+  eventInteraction  EventInteraction[]
+  eventLikes        EventLike[]
+  events            Event[]
+
+  @@map("Users")
+}
+
+model Event {
+  id                Int                @id @default(autoincrement())
+  userId            Int
+  headline          String
+  body              String?
+  location          String?
+  hidden            Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now())
+  user              User               @relation(fields: [userId], references: [id])
+  comments          Comment[]
+  eventAttendances  EventAttendance[]
+  eventInteractions EventInteraction[]
+  eventLikes        EventLike[]
+
+  @@map("Events")
+
+  @@index([userId])
+}
+
+model EventLike {
+  userId    Int
+  eventId   Int
+  dislike   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, eventId])
+  @@map("EventLikes")
+  
+  @@index([userId])
+  @@index([eventId])
+}
+
+model Comment {
+  id                Int                @id @default(autoincrement())
+  userId            Int
+  eventId           Int
+  body              String?
+  hidden            Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now())
+  event             Event              @relation(fields: [eventId], references: [id])
+  user              User               @relation(fields: [userId], references: [id])
+  commentLikes      CommentLike[]
+  eventInteractions EventInteraction[]
+
+  @@map("Comments")
+
+  @@index([userId])
+  @@index([eventId])
+}
+
+model EventInteraction {
+  userId        Int
+  eventId       Int
+  lastCommentId Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+  comment       Comment? @relation(fields: [lastCommentId], references: [id])
+  event         Event    @relation(fields: [eventId], references: [id])
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, eventId])
+  @@map("EventInteractions")
+
+  @@index([userId])
+  @@index([eventId])
+  @@index([lastCommentId])
+}
+
+model EventAttendance {
+  userId    Int
+  eventId   Int
+  state     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, eventId])
+  @@map("EventAttendances")
+
+  @@index([userId])
+  @@index([eventId])
+}
+
+model CommentLike {
+  userId    Int
+  commentId Int
+  dislike   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, commentId])
+  @@map("CommentLikes")
+
+  @@index([userId])
+  @@index([commentId])
+}
