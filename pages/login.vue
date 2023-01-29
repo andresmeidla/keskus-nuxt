@@ -7,6 +7,7 @@
 </template>
 <script setup lang="ts">
 import { Routes } from '@/lib/routes';
+import { store } from '~~/store';
 
 definePageMeta({
   layout: 'login',
@@ -28,6 +29,7 @@ async function login() {
     const date = new Date();
     const token = useAuthCookie({ expires: new Date(date.setMonth(date.getMonth() + 2)) });
     token.value = String(rsp.token);
+    store.setUserId(getUser());
     const router = useRouter();
     router.push(Routes.MAIN);
 

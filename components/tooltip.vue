@@ -2,7 +2,9 @@
   <component :is="!disabled ? 'VTooltip' : 'div'" :class="props.class" @show="emit('show')" @hide="emit('hide')">
     <slot />
     <template #popper>
-      <slot name="tooltip"></slot>
+      <div class="text-sm">
+        <slot name="tooltip"></slot>
+      </div>
     </template>
   </component>
 </template>

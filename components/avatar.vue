@@ -2,37 +2,37 @@
   <div class="flex flex-col items-center justify-center">
     <Tooltip :disabled="!tooltip" position="right" class="flex">
       <div class="avatar" :class="props.class">
-        <div class="h-8 w-8 rounded-full" :class="[`h-${size} w-${size}`]">
-          <img :src="url" :alt="name" />
+        <div
+          class="rounded-full"
+          :class="{
+            ['h-[25px]']: size === 'sm',
+            ['w-[25px]']: size === 'sm',
+            ['h-[35px]']: size === 'md',
+            ['w-[35px]']: size === 'md',
+            ['h-[64px]']: size === 'lg',
+            ['w-[64px]']: size === 'lg',
+          }"
+        >
+          <img :src="url" :alt="displayName" />
         </div>
       </div>
       <template #tooltip>
         <div>{{ tooltip }}</div>
       </template>
     </Tooltip>
-    <div v-if="name" class="w-full text-center text-base">{{ name }}</div>
+    <div v-if="showName" class="w-full text-center text-base">{{ displayName }}</div>
     <div v-if="date" class="w-full items-center text-center text-xs"><Datetime :date="date" /></div>
   </div>
 </template>
 <script setup lang="ts">
 import gravatarUrl from 'gravatar-url';
+import { PropType } from 'vue';
+
+import { UserInfo } from '~~/server/lib/entity-types';
 
 const props = defineProps({
-  name: {
-    type: String,
-    required: false,
-    default: null,
-  },
-  firstname: {
-    type: String,
-    required: true,
-  },
-  lastname: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
+  user: {
+    type: Object as PropType<UserInfo>,
     required: true,
   },
   date: {
@@ -41,9 +41,9 @@ const props = defineProps({
     default: null,
   },
   size: {
-    type: Number,
+    type: String as PropType<'sm' | 'md' | 'lg' | 'xl'>,
     required: false,
-    default: 14,
+    default: 'md',
   },
   tooltip: {
     type: String,
@@ -55,11 +55,20 @@ const props = defineProps({
     required: false,
     default: null,
   },
+  showName: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
 });
 const defaultUrl = computed(
-  () => `https://ui-avatars.com/api/${props.firstname.length > 0 ? props.firstname[0] : 'X'}+${props.lastname.length ? props.lastname[0] : 'X'}/64/0E7490/fff`
+  () =>
+    `https://ui-avatars.com/api/${props.user.firstname.length > 0 ? props.user.firstname[0] : 'X'}+${
+      props.user.lastname.length ? props.user.lastname[0] : 'X'
+    }/64/0E7490/fff`
 );
-const url = computed(() => gravatarUrl(props.email || '', { size: 50, default: defaultUrl.value }));
+const url = computed(() => gravatarUrl(props.user.email || '', { size: 64, default: defaultUrl.value }));
+const displayName = computed(() => userDisplayName(props.user));
 </script>
 
 <style scoped></style>

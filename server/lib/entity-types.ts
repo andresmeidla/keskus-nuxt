@@ -2,8 +2,8 @@ export type UserInfo = {
   id: number;
   firstname: string;
   lastname: string;
-  nickname: string;
-  email: string;
+  nickname: string | null;
+  email: string | null;
 };
 
 export const DefaultUserAttributes: { [key in keyof UserInfo]: true } = {

@@ -1,7 +1,7 @@
 import Toastify from 'toastify-js';
 
 export const useToastError = (rsp: Error & { data?: any }) => {
-  console.error(rsp.message, JSON.stringify(rsp.data, null, 2));
+  console.error('###', rsp.message, JSON.stringify(rsp.data, null, 2));
   if (process.client) {
     Toastify({
       text: `<h1>${rsp.message}</h1>`,

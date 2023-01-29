@@ -2,8 +2,27 @@ import daisyui from 'daisyui';
 import { Config } from 'tailwindcss';
 
 const config: Config = {
+  mode: 'jit',
   content: ['./components/*.{html,js,ts,vue}', './layouts/*.{html,js,ts,vue}', './pages/*.{html,js,ts,vue}', './app.vue'],
-  plugins: [require('prettier-plugin-tailwindcss'), daisyui],
+  plugins: [
+    require('prettier-plugin-tailwindcss'),
+    daisyui,
+    function ({ addBase, theme }: { addBase: any; theme: any }) {
+      function extractColorVars(colorObj: any, colorGroup = ''): any {
+        return Object.keys(colorObj).reduce((vars, colorKey) => {
+          const value = colorObj[colorKey];
+
+          const newVars = typeof value === 'string' ? { [`--color${colorGroup}-${colorKey}`]: value } : extractColorVars(value, `-${colorKey}`);
+
+          return { ...vars, ...newVars };
+        }, {});
+      }
+
+      addBase({
+        ':root': extractColorVars(theme('colors')),
+      });
+    },
+  ],
   daisyui: {
     themes: [
       {

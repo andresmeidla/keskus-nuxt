@@ -8,11 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import moment from 'moment';
+import { dateFormatted, dateFromNow } from '~~/lib/utils';
 
-const fromNow = computed(() => moment(props.date).fromNow());
-
-const formattedData = computed(() => moment(props.date).format('YYYY-MM-DD HH:mm'));
+const fromNow = computed(() => dateFromNow(props.date));
+const formattedData = computed(() => dateFormatted(props.date));
 
 const props = defineProps({
   date: {
