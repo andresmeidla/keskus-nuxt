@@ -7,12 +7,17 @@ html {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-  Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+  Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  overflow-y: scroll; /* Show vertical scrollbar */
 }
 
 .hover-styled {
-  @apply duration-75 hover:bg-white hover:shadow-md hover:drop-shadow-lg hover:transition-all
+  @apply duration-75 hover:shadow-md hover:drop-shadow-lg hover:transition-all
+}
+
+.custom-underlined {
+  @apply shadow-[0_4px_8px_-8px] shadow-gray-900;
 }
 
 /*

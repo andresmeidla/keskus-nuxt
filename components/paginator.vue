@@ -1,11 +1,11 @@
 <template>
   <div class="flex w-full items-center justify-center justify-items-center">
     <div class="btn-group">
-      <button class="btn hover:opacity-75 hover:shadow-lg hover:transition-all" @click="first">«</button>
-      <button class="btn hover:opacity-75 hover:shadow-lg hover:transition-all" @click="previous">‹</button>
-      <button class="btn hover:opacity-75 hover:shadow-lg hover:transition-all">Page {{ localValue }} (total {{ totalCount }})</button>
-      <button class="btn hover:opacity-75 hover:shadow-lg hover:transition-all" @click="next">›</button>
-      <button class="btn hover:opacity-75 hover:shadow-lg hover:transition-all" @click="last">»</button>
+      <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="first">«</button>
+      <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="previous">‹</button>
+      <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all">Page {{ localValue }} (total {{ totalCount }})</button>
+      <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="next">›</button>
+      <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="last">»</button>
     </div>
   </div>
 </template>
@@ -51,10 +51,4 @@ function last() {
 }
 </script>
 
-<style>
-.btn-group .btn {
-  background-color: inherit;
-  border: 1px solid;
-  @apply border-gray-500 text-gray-700;
-}
-</style>
+<style scoped></style>

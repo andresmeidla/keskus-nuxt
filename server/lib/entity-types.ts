@@ -18,3 +18,9 @@ export type PaginationQuery = {
   page: number;
   perPage: number;
 };
+
+export enum AttendanceState {
+  Not = 'Not',
+  Maybe = 'Maybe',
+  Going = 'Going',
+}

@@ -2,6 +2,15 @@
 import DOMPurify, { Config } from 'isomorphic-dompurify';
 import moment from 'moment';
 
+DOMPurify.addHook('uponSanitizeElement', (node: any, data) => {
+  if (data.tagName === 'iframe') {
+    const src = node.getAttribute('src') || '';
+    if (!src.startsWith('https://www.youtube.com/embed/')) {
+      return node.parentNode.removeChild(node);
+    }
+  }
+});
+
 export function dateFromNow(date?: string | Date) {
   return date ? moment(date).fromNow() : 'never';
 }
@@ -37,7 +46,15 @@ export function decodeBase64(value: string): string {
   }
 }
 
+export function purgeHtml(html: string, config?: Config) {
+  return DOMPurify.sanitize(html, { ALLOWED_TAGS: [], ...config }).toString();
+}
+
 export function purifyHtml(html: string, config?: Config) {
-  const ret = DOMPurify.sanitize(html, { ...config }).toString();
+  const ret = DOMPurify.sanitize(html, {
+    ADD_TAGS: ['iframe'], // or ALLOWED_TAGS
+    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling'], // or //or ALLOWED_ATR
+    ...config,
+  }).toString();
   return ret;
 }

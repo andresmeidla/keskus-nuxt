@@ -13,16 +13,10 @@ useHead({
   title: 'keskus',
   htmlAttrs: { lang: 'en' },
 });
-
-const userId = getUser();
-if (userId) {
-  store.setUserId(userId);
-
-  try {
-    store.setUser(await keskusFetch(`/api/users/${userId}`));
-  } catch (err: any) {
-    useToastError(err);
-  }
+try {
+  await store.initAuth();
+} catch (err: any) {
+  useToastError(err);
 }
 </script>
 <style scoped>
@@ -38,5 +32,15 @@ if (userId) {
 .layout-enter-from,
 .layout-leave-to {
   filter: blur(2px);
+}
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.4s;
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  filter: blur(1rem);
 }
 </style>

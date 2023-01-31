@@ -27,9 +27,9 @@ async function login() {
     });
     // save token as cookie
     const date = new Date();
-    const token = useAuthCookie({ expires: new Date(date.setMonth(date.getMonth() + 2)) });
-    token.value = String(rsp.token);
-    store.setUserId(getUser());
+    const cookie = useAuthCookie({ expires: new Date(date.setMonth(date.getMonth() + 2)) });
+    cookie.value = String(rsp.token);
+    await store.initAuth(cookie);
     const router = useRouter();
     router.push(Routes.MAIN);
 

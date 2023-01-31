@@ -17,5 +17,12 @@ export function useKeskusFetch<
   opts?: UseFetchOptions<_ResT, Transform, PickKeys>
 ): AsyncData<PickFrom<ReturnType<Transform>, PickKeys>, ErrorT | null>;
 export function useKeskusFetch<ReqT extends NitroFetchRequest = NitroFetchRequest>(url: Ref<ReqT> | ReqT | (() => ReqT)) {
-  return useFetch(url, { headers: useRequestHeaders() as Record<string, string> });
+  const rsp = useFetch(url, { headers: useRequestHeaders() as Record<string, string> });
+  if (rsp.error) {
+    if (rsp.error instanceof FetchError && rsp.error.statusCode === 401) {
+      // redirect to login
+      useRouter().push('/login');
+    }
+  }
+  return rsp;
 }

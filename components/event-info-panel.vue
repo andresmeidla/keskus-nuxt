@@ -1,7 +1,7 @@
 <template>
   <div v-if="eventDetails" class="flex h-full flex-col items-start justify-center gap-2 pl-10">
     <div class="flex flex-row items-center justify-center">
-      <Like :event-id="eventDetails.id" :like-count="eventDetails.eventLikes.length" :event-likes="eventDetails.eventLikes" @updated="emit('updated')" />
+      <EventLike :event-id="eventDetails.id" :event-likes="eventDetails.eventLikes" @updated="emit('updated')" />
     </div>
     <div class="flex flex-row">
       <div class="flex flex-row items-center justify-center gap-1">
@@ -49,9 +49,9 @@ const props = defineProps({
   },
 });
 
-const commentUsers = computed(() => props.lastCommentUsers?.map((u) => userDisplayName(u)).join(', ') || '');
-
 const emit = defineEmits(['updated']);
+
+const commentUsers = computed(() => props.lastCommentUsers?.map((u) => userDisplayName(u)).join(', ') || '');
 </script>
 
 <style scoped></style>

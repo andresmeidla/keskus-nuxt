@@ -96,6 +96,9 @@ CREATE UNIQUE INDEX "Users_username_key" ON "Users"("username");
 CREATE INDEX "Events_userId_idx" ON "Events"("userId");
 
 -- CreateIndex
+CREATE INDEX "Events_createdAt_idx" ON "Events"("createdAt" DESC);
+
+-- CreateIndex
 CREATE INDEX "EventLikes_userId_idx" ON "EventLikes"("userId");
 
 -- CreateIndex
@@ -106,6 +109,9 @@ CREATE INDEX "Comments_userId_idx" ON "Comments"("userId");
 
 -- CreateIndex
 CREATE INDEX "Comments_eventId_idx" ON "Comments"("eventId");
+
+-- CreateIndex
+CREATE INDEX "Comments_createdAt_idx" ON "Comments"("createdAt" DESC);
 
 -- CreateIndex
 CREATE INDEX "EventInteractions_userId_idx" ON "EventInteractions"("userId");
@@ -129,37 +135,37 @@ CREATE INDEX "CommentLikes_userId_idx" ON "CommentLikes"("userId");
 CREATE INDEX "CommentLikes_commentId_idx" ON "CommentLikes"("commentId");
 
 -- AddForeignKey
-ALTER TABLE "Events" ADD CONSTRAINT "Events_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Events" ADD CONSTRAINT "Events_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventLikes" ADD CONSTRAINT "EventLikes_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Events"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EventLikes" ADD CONSTRAINT "EventLikes_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Events"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventLikes" ADD CONSTRAINT "EventLikes_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EventLikes" ADD CONSTRAINT "EventLikes_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comments" ADD CONSTRAINT "Comments_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Events"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Comments" ADD CONSTRAINT "Comments_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Events"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Comments" ADD CONSTRAINT "Comments_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Comments" ADD CONSTRAINT "Comments_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventInteractions" ADD CONSTRAINT "EventInteractions_lastCommentId_fkey" FOREIGN KEY ("lastCommentId") REFERENCES "Comments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "EventInteractions" ADD CONSTRAINT "EventInteractions_lastCommentId_fkey" FOREIGN KEY ("lastCommentId") REFERENCES "Comments"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventInteractions" ADD CONSTRAINT "EventInteractions_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Events"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EventInteractions" ADD CONSTRAINT "EventInteractions_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Events"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventInteractions" ADD CONSTRAINT "EventInteractions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EventInteractions" ADD CONSTRAINT "EventInteractions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventAttendances" ADD CONSTRAINT "EventAttendances_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Events"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EventAttendances" ADD CONSTRAINT "EventAttendances_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Events"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventAttendances" ADD CONSTRAINT "EventAttendances_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EventAttendances" ADD CONSTRAINT "EventAttendances_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CommentLikes" ADD CONSTRAINT "CommentLikes_commentId_fkey" FOREIGN KEY ("commentId") REFERENCES "Comments"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CommentLikes" ADD CONSTRAINT "CommentLikes_commentId_fkey" FOREIGN KEY ("commentId") REFERENCES "Comments"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CommentLikes" ADD CONSTRAINT "CommentLikes_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CommentLikes" ADD CONSTRAINT "CommentLikes_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

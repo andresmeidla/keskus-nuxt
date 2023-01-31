@@ -1,9 +1,22 @@
 <template>
-  <div class="flex flex-row items-center justify-center gap-1">
-    <Tooltip :disabled="likeCount === 0">
-      <span class="flex items-center gap-1" @click="like">
-        <Icon :name="userLike ? 'mdi:cards-heart' : 'mdi:cards-heart-outline'" class="h-5 w-5" :class="{ 'text-red-600': userLike }" />
-        <span>{{ likeCount }}</span>
+  <div class="flex w-full cursor-pointer flex-row items-center justify-center gap-1">
+    <Tooltip :disabled="eventLikes.length === 0">
+      <span class="flex items-center gap-1" @click.prevent="like">
+        <Icon
+          :name="userLike ? 'mdi:cards-heart' : 'mdi:cards-heart-outline'"
+          :class="{
+            ['text-red-600']: userLike,
+            ['h-4']: size === 'sm',
+            ['w-4']: size === 'sm',
+            ['h-5']: size === 'md',
+            ['w-5']: size === 'md',
+            ['h-6']: size === 'lg',
+            ['w-6']: size === 'lg',
+            ['h-8']: size === 'xl',
+            ['w-8']: size === 'xl',
+          }"
+        />
+        <span>{{ eventLikes.length }}</span>
       </span>
       <template #tooltip>
         {{ likeUsers.join(', ') }}
@@ -24,13 +37,13 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-  likeCount: {
-    type: Number,
-    required: true,
-  },
   eventLikes: {
     type: Object as PropType<EventType['eventLikes']>,
     required: true,
+  },
+  size: {
+    type: String as PropType<'sm' | 'md' | 'lg' | 'xl'>,
+    default: 'md',
   },
 });
 

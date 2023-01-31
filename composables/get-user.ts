@@ -1,10 +1,9 @@
 import { parseJwt } from '~~/lib/utils';
 
-export const getUser = () => {
-  const cookie = useAuthCookie();
+export const getUser = (cookie = useAuthCookie()) => {
   if (cookie.value) {
     const decoded = parseJwt(cookie.value);
-    return decoded?.id;
+    return decoded?.id as number;
   }
   return undefined;
 };

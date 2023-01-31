@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center justify-center">
+  <div class="avatar-wrapper flex flex-col items-center justify-center">
     <Tooltip :disabled="!tooltip" position="right" class="flex">
       <div class="avatar" :class="props.class">
         <div
@@ -9,19 +9,21 @@
             ['w-[25px]']: size === 'sm',
             ['h-[35px]']: size === 'md',
             ['w-[35px]']: size === 'md',
-            ['h-[64px]']: size === 'lg',
-            ['w-[64px]']: size === 'lg',
+            ['h-[50px]']: size === 'lg',
+            ['w-[50px]']: size === 'lg',
+            ['h-[64px]']: size === 'xl',
+            ['w-[64px]']: size === 'xl',
           }"
         >
           <img :src="url" :alt="displayName" />
         </div>
       </div>
       <template #tooltip>
-        <div>{{ tooltip }}</div>
+        <div class="avatar-tooltip">{{ tooltip }}</div>
       </template>
     </Tooltip>
-    <div v-if="showName" class="w-full text-center text-base">{{ displayName }}</div>
-    <div v-if="date" class="w-full items-center text-center text-xs"><Datetime :date="date" /></div>
+    <div v-if="showName" class="avatar-name w-full text-center text-base">{{ displayName }}</div>
+    <div v-if="date" class="avatar-date w-full items-center text-center text-xs"><Datetime :date="date" /></div>
   </div>
 </template>
 <script setup lang="ts">
@@ -37,27 +39,22 @@ const props = defineProps({
   },
   date: {
     type: Date,
-    required: false,
     default: null,
   },
   size: {
     type: String as PropType<'sm' | 'md' | 'lg' | 'xl'>,
-    required: false,
     default: 'md',
   },
   tooltip: {
     type: String,
-    required: false,
     default: null,
   },
   class: {
-    type: String,
-    required: false,
+    type: [String, Object],
     default: null,
   },
   showName: {
     type: Boolean,
-    required: false,
     default: true,
   },
 });
