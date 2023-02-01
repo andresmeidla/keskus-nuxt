@@ -2,8 +2,9 @@ import jwt from 'jsonwebtoken';
 
 const cfg = useRuntimeConfig();
 
-const NO_AUTH_ROUTES = [
-  '/login',
+const NO_AUTH_ROUTE_REGEXES = [
+  // allow /login with query parameters
+  /\/login\?.*/g,
   '/api/login',
   // /\/api\/scrapers\/[a-zA-Z0-9_-]+\/events\/[a-zA-Z0-9_\-=]+/g, // event api route
   /\/_ipx\/.*/g,
@@ -11,7 +12,7 @@ const NO_AUTH_ROUTES = [
 ];
 
 export default defineEventHandler((event) => {
-  const allowedRoute = NO_AUTH_ROUTES.find((r) => {
+  const allowedRoute = NO_AUTH_ROUTE_REGEXES.find((r) => {
     if (r instanceof RegExp) {
       return new RegExp(r).test(event.node.req.url ?? '');
     } else if (r === event.node.req.url ?? '') {
@@ -36,5 +37,5 @@ export default defineEventHandler((event) => {
   }
   console.warn(`Denying access to ${event.node.req.url}`);
   // redirecting
-  return sendRedirect(event, '/login');
+  return sendRedirect(event, `/login?${new URLSearchParams({ redirect: event.node.req.url ?? '' })}`);
 });

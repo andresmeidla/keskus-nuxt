@@ -1,7 +1,7 @@
 <template>
-  <div class="flex w-full cursor-pointer flex-row items-center justify-center gap-1">
+  <div class="flex w-full cursor-pointer flex-row items-center justify-center gap-1" @click.stop="like">
     <Tooltip :disabled="eventLikes.length === 0">
-      <span class="flex items-center gap-1" @click.prevent="like">
+      <span class="flex items-center gap-1">
         <Icon
           :name="userLike ? 'mdi:cards-heart' : 'mdi:cards-heart-outline'"
           :class="{

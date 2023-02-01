@@ -31,7 +31,7 @@ definePageMeta({
 });
 
 const page = ref(1);
-const perPage = ref(7);
+const perPage = ref(8);
 const eventData = reactive({
   count: 0,
   events: [] as EndpointEvents,

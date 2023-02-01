@@ -4,6 +4,8 @@ import { AsyncData, FetchResult, UseFetchOptions } from 'nuxt/dist/app/composabl
 import { KeyOfRes, PickFrom } from 'nuxt/dist/app/composables/asyncData';
 import { FetchError } from 'ofetch';
 
+import { Routes } from '~~/lib/routes';
+
 /* super complex type but needed for the api type infers */
 export function useKeskusFetch<
   ResT = void,
@@ -21,7 +23,7 @@ export function useKeskusFetch<ReqT extends NitroFetchRequest = NitroFetchReques
   if (rsp.error) {
     if (rsp.error instanceof FetchError && rsp.error.statusCode === 401) {
       // redirect to login
-      useRouter().push('/login');
+      useRouter().push({ path: Routes.LOGIN, query: { redirect: window.location.pathname } });
     }
   }
   return rsp;

@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     })
   );
   const userId = event.context.auth.id as number;
-  const [keskusEvent, userInteraction, lastCommentUsers] = await prisma.$transaction([
+  const [keskusEvent, userInteraction, newCommentCountResult, lastCommentUsers] = await prisma.$transaction([
     prisma.event.findUnique({
       where: {
         id: params.eventId,
@@ -67,14 +67,48 @@ export default defineEventHandler(async (event) => {
         },
       },
     }),
+    findNewCommentCount(params.eventId, userId),
     ...(query.lastCommentUsers ? [findLastCommentUsers(params.eventId)] : []),
   ]);
+  if (!keskusEvent) {
+    return createError({ statusCode: 404, message: 'Event not found' });
+  }
   return {
     event: keskusEvent,
     userInteraction,
     lastCommentUsers: query.lastCommentUsers ? lastCommentUsers : undefined,
+    newCommentCount: newCommentCountResult.length > 0 ? newCommentCountResult[0].count : null,
   };
 });
+
+function findNewCommentCount(eventId: number, userId: number) {
+  return prisma.$queryRaw<{ count: number; lastCommentId: number }[]>`
+  with init as (
+    select
+      "lastCommentId",
+      c."createdAt" as "lastCommentDate"
+    from
+      "EventInteractions" ei
+    left join "Comments" c on
+      (c.id = ei."lastCommentId")
+    where
+      ei."eventId" = ${eventId}
+      and ei."userId" = ${userId}
+  )
+
+  select
+    count(c.id)::integer as count,
+    init."lastCommentId"
+  from
+    "Comments" c
+  cross join init
+  where
+    c."eventId" = ${eventId}
+    and c."createdAt" > init."lastCommentDate"
+  group by
+    "init"."lastCommentId";
+  `;
+}
 
 function findLastCommentUsers(eventId: number) {
   return prisma.$queryRaw<{ id: number; firstname: string; lastname: string; nickname: string; email: string }[]>`

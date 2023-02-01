@@ -1,11 +1,11 @@
 <template>
-  <div class="grid h-[5.1rem] w-full cursor-pointer grid-cols-12 gap-2" @click="eventLink?.click()">
+  <div class="grid h-[5.1rem] w-full cursor-pointer grid-cols-12 gap-2 py-1" :class="{ 'bg-white': isNewEvent }" @click="eventLink?.click()">
     <div v-if="event.user" class="col-span-4 flex items-center justify-center sm:col-span-2">
       <Avatar :user="event.user" :date="new Date(event.createdAt)"></Avatar>
     </div>
     <div class="col-span-7 flex flex-col justify-center xl:col-span-8">
       <div class="flex flex-row items-center text-lg">
-        <span class="overflow-hidden text-ellipsis whitespace-nowrap" :class="{ ['font-semibold']: !(userInteraction ?? userInteraction !== null) }">
+        <span class="overflow-hidden text-ellipsis whitespace-nowrap" :class="{ ['font-semibold']: isNewEvent }">
           {{ event.headline }}
         </span>
       </div>
@@ -14,7 +14,7 @@
       >
     </div>
     <div v-if="eventDetails && lastCommentUsers" class="col-span-3 hidden overflow-clip lg:block xl:col-span-2">
-      <EventInfoPanel :event-details="eventDetails" :last-comment-users="lastCommentUsers" @updated="getEvent" />
+      <EventInfoPanel :event-details="eventDetails" :last-comment-users="lastCommentUsers" :new-comment-count="newCommentCount" @updated="getEvent" />
     </div>
     <NuxtLink class="hidden" :to="`/events/${eventId}`"><span ref="eventLink">a</span></NuxtLink>
   </div>
@@ -40,8 +40,11 @@ const props = defineProps({
 const eventDetails = ref<EndpointEvent['event'] | undefined>();
 const userInteraction = ref<EndpointEvent['userInteraction'] | undefined>();
 const lastCommentUsers = ref<EndpointEvent['lastCommentUsers'] | undefined>();
+const newCommentCount = ref<EndpointEvent['newCommentCount'] | null>(null);
 
 const eventLink = ref<HTMLSpanElement | null>(null);
+
+const isNewEvent = computed(() => !(userInteraction.value ?? userInteraction.value !== null));
 
 async function getEvent() {
   try {
@@ -49,6 +52,7 @@ async function getEvent() {
     eventDetails.value = rsp.event;
     userInteraction.value = rsp.userInteraction;
     lastCommentUsers.value = rsp.lastCommentUsers;
+    newCommentCount.value = rsp.newCommentCount;
   } catch (err: any) {
     useToastError(err);
   }

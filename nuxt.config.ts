@@ -4,6 +4,12 @@ export default defineNuxtConfig({
   modules: ['@nuxt/image-edge', 'nuxt-icon', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode'],
   runtimeConfig: {
     jwtSecret: '0h23tg9f7hwab19g72',
+    webAddress: 'localhost:3000',
+    emailPassword: 'password',
+    emailAddress: 'keskus.notifications@gmail.com',
+    emailSender: 'Keskus Mail <keskus.notifications@gmail.com>',
+    emailProtocol: 'smtps',
+    emailHost: 'smtp.gmail.com',
     public: {
       apiUrl: '/api',
     },

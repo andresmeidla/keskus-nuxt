@@ -54,5 +54,16 @@ async function fetchComments() {
   }
 }
 
-await Promise.all([getEvent(), fetchComments()]);
+async function saveInteraction() {
+  try {
+    await keskusFetch(`/api/events/${eventId.value}/interact`, { method: 'POST', body: { interaction: userInteraction.value } });
+  } catch (err: any) {
+    // useToastError(err);
+    console.warn('Interaction save failed', err.message);
+  }
+}
+
+await Promise.all([getEvent(), fetchComments(), saveInteraction()]).catch((err) => {
+  console.error('UNCAUGHT', err);
+});
 </script>

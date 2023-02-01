@@ -3,7 +3,7 @@
     <div class="btn-group">
       <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="first">«</button>
       <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="previous">‹</button>
-      <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all">Page {{ localValue }} (total {{ totalCount }})</button>
+      <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all">Lk {{ localValue }} (Kokku {{ totalCount }})</button>
       <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="next">›</button>
       <button class="btn btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="last">»</button>
     </div>

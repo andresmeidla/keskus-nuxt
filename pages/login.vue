@@ -31,6 +31,9 @@ async function login() {
     cookie.value = String(rsp.token);
     await store.initAuth(cookie);
     const router = useRouter();
+    if (useRoute().query.redirect) {
+      return router.push(String(useRoute().query.redirect));
+    }
     router.push(Routes.MAIN);
 
     // useRouter().push('/');
