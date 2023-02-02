@@ -32,6 +32,8 @@ async function login() {
     const user = await keskusFetch(`/api/users/${getUser(cookie)}`);
     await store.initAuth(cookie, user);
     const router = useRouter();
+    // eslint-disable-next-line no-console
+    console.info('Successfully logged in.');
     if (useRoute().query.redirect) {
       return router.push(String(useRoute().query.redirect));
     }
