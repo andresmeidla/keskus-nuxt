@@ -24,7 +24,7 @@ export async function keskusFetch<T extends NitroFetchRequest, Opts extends Nitr
     if (e instanceof FetchError && e.statusCode === 401) {
       // redirect to login
       if (useRoute().path !== Routes.LOGIN) {
-        useRouter().push({ path: Routes.LOGIN, query: { redirect: window.location.pathname } });
+        useRouter().push({ path: Routes.LOGIN, query: { redirect: window.location.pathname, fromFetch: 'true' } });
       }
     }
     throw e;

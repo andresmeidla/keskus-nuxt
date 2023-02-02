@@ -36,7 +36,7 @@ export function useKeskusFetch<
       if (e instanceof FetchError && e.statusCode === 401) {
         // redirect to login
         if (useRoute().path !== Routes.LOGIN) {
-          useRouter().push({ path: Routes.LOGIN, query: { redirect: window.location.pathname } });
+          useRouter().push({ path: Routes.LOGIN, query: { redirect: window.location.pathname, fromUseFetch: 'true' } });
         }
       }
       throw e;

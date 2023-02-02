@@ -7,6 +7,7 @@ const NO_AUTH_ROUTE_REGEXES = [
   /login\?.*/g,
   'api/login',
   /_ipx\/.*/g,
+  /__nuxt_error\?.*/g,
 ];
 
 export default defineEventHandler((event) => {
@@ -42,5 +43,5 @@ export default defineEventHandler((event) => {
     throw createError({ statusCode: 401, message: 'Unauthorized' });
   }
   // redirecting
-  return sendRedirect(event, `/login?${new URLSearchParams({ redirect: event.node.req.url ?? '' })}`);
+  return sendRedirect(event, `/login?${new URLSearchParams({ redirect: event.node.req.url ?? '', fromServer: 'true' })}`);
 });
