@@ -4,21 +4,20 @@ const cfg = useRuntimeConfig();
 
 const NO_AUTH_ROUTE_REGEXES = [
   // allow /login with query parameters
-  /login\?.*/g,
-  'api/login',
-  /_ipx\/.*/g,
-  /__nuxt_error\?.*/g,
+  /\/login.*/g,
+  '/api/login',
+  /\/_ipx\/.*/g,
+  /\/__nuxt_error\?.*/g,
 ];
 
 export default defineEventHandler((event) => {
-  let url = event.node.req.url ?? '';
-  if (url.length > 0 && url[0] === '/') {
-    url = url.slice(1);
-  }
+  const parsedUrl = new URL(event.node.req.url ?? '/', useRuntimeConfig().webAddress);
+  const pathname = parsedUrl.pathname;
+
   const allowedRoute = NO_AUTH_ROUTE_REGEXES.find((r) => {
     if (r instanceof RegExp) {
-      return new RegExp(r).test(url ?? '');
-    } else if (r === url ?? '') {
+      return new RegExp(r).test(pathname);
+    } else if (r === pathname) {
       return true;
     }
     return false;
@@ -38,10 +37,9 @@ export default defineEventHandler((event) => {
       console.warn('While verifying token:', e);
     }
   }
-  console.warn(`Denying access to ${event.node.req.url}`);
-  if (url?.startsWith('api/')) {
+  if (pathname.startsWith('/api')) {
     throw createError({ statusCode: 401, message: 'Unauthorized' });
   }
   // redirecting
-  return sendRedirect(event, `/login?${new URLSearchParams({ redirect: event.node.req.url ?? '', fromServer: 'true' })}`);
+  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fromServer: 'true' })}`);
 });

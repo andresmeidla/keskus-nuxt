@@ -34,8 +34,8 @@ async function login() {
     const router = useRouter();
     // eslint-disable-next-line no-console
     console.info('Successfully logged in.');
-    if (useRoute().query.redirect) {
-      return router.push(String(useRoute().query.redirect));
+    if (useRoute().query.initial) {
+      return router.push(String(useRoute().query.initial));
     }
     router.push(Routes.MAIN);
 
