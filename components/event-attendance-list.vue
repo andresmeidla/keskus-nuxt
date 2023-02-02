@@ -29,7 +29,7 @@ import { store } from '~~/store';
 
 import { AttendanceState } from '../server/lib/entity-types';
 
-type EndpointEventAttendance = NonNullable<NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/`>>>>['event']>['eventAttendances'][number];
+type EndpointEventAttendance = NonNullable<NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/`>>>>>['eventAttendances'][number];
 
 const attendanceStyle = {
   [AttendanceState.Going]: 'success',
@@ -54,14 +54,17 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['updated']);
+const localEventAttendees = computed({
+  get: () => props.eventAttendances,
+  set: () => {},
+});
 
 const userAttendance = computed(() => {
-  return props.eventAttendances.find((att) => att.userId === store.userId);
+  return localEventAttendees.value.find((att) => att.userId === store.userId);
 });
 
 const attendanceMap = computed(() => {
-  return props.eventAttendances.reduce(
+  return localEventAttendees.value.reduce(
     (acc, cur) => {
       if (!acc[cur.state as AttendanceState]) {
         console.error(`Invalid AttendanceState: "${cur.state}"`);
@@ -79,9 +82,31 @@ const attendanceMap = computed(() => {
 });
 
 async function setAttendance(state: AttendanceState) {
+  // add a custom like object to the array
+  // or remove it if it already exists
+  // so that the UI updates immediately, then make a request to the server
+  if (userAttendance.value) {
+    if (userAttendance.value.state === state) {
+      const likeIndex = localEventAttendees.value.findIndex((ea) => ea.userId === store.userId);
+      if (likeIndex !== -1) {
+        localEventAttendees.value.splice(likeIndex, 1); // = localCommentLikes.value.filter((l) => l.userId !== store.userId);
+      }
+    } else {
+      userAttendance.value.state = state;
+    }
+  } else {
+    localEventAttendees.value.push({
+      id: 0,
+      userId: store.userId,
+      user: store.user,
+      eventId: props.eventId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      state,
+    } as EndpointEventAttendance);
+  }
   try {
     await keskusFetch(`/api/events/${props.eventId}/attendance`, { method: 'POST', body: { state } });
-    emit('updated');
   } catch (err: any) {
     useToastError(err);
   }

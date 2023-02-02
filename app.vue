@@ -1,6 +1,7 @@
 <template>
   <div id="keskus">
     <NuxtLayout>
+      <LoadingIndicator />
       <NuxtPage />
     </NuxtLayout>
   </div>

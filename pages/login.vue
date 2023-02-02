@@ -29,7 +29,8 @@ async function login() {
     const date = new Date();
     const cookie = useAuthCookie({ expires: new Date(date.setMonth(date.getMonth() + 2)) });
     cookie.value = String(rsp.token);
-    await store.initAuth(cookie);
+    const user = await keskusFetch(`/api/users/${getUser(cookie)}`);
+    await store.initAuth(cookie, user);
     const router = useRouter();
     if (useRoute().query.redirect) {
       return router.push(String(useRoute().query.redirect));

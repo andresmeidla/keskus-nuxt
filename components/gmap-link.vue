@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink class="link" :href="gMapUrl" target="_blank"
+  <NuxtLink class="link" :href="gMapUrl" target="_blank" @click.stop=""
     ><Icon
       name="logos:google-maps"
       class="hover:saturate-50"

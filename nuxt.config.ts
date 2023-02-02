@@ -4,12 +4,14 @@ export default defineNuxtConfig({
   modules: ['@nuxt/image-edge', 'nuxt-icon', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode'],
   runtimeConfig: {
     jwtSecret: '0h23tg9f7hwab19g72',
-    webAddress: 'localhost:3000',
+    webAddress: 'https://keskus2.meidla.com',
     emailPassword: 'password',
-    emailAddress: 'keskus.notifications@gmail.com',
-    emailSender: 'Keskus Mail <keskus.notifications@gmail.com>',
+    emailAddress: 'keskus.mail@gmail.com',
+    emailSender: '"Keskus" <keskus.mail@gmail.com>',
     emailProtocol: 'smtps',
     emailHost: 'smtp.gmail.com',
+    emailPort: 465,
+    emailsToAllEnabled: false,
     public: {
       apiUrl: '/api',
     },

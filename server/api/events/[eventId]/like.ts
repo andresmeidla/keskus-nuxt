@@ -1,6 +1,8 @@
 import { zh } from 'h3-zod';
 import { z } from 'zod';
 
+import { DefaultUserAttributes } from '~~/server/lib/entity-types';
+
 export default defineEventHandler(async (event) => {
   const params = await zh.useValidatedParams(
     event,
@@ -8,18 +10,15 @@ export default defineEventHandler(async (event) => {
       eventId: z.coerce.number(),
     })
   );
-  const body = await zh.useValidatedBody(
-    event,
-    z.object({
-      body: z.string().min(1).max(10000),
-    })
-  );
-  const userId = event.context.auth.id as number;
-  return await prisma.comment.create({
-    data: {
-      body: body.body,
+  return prisma.eventLike.findFirst({
+    where: {
       eventId: params.eventId,
-      userId,
+      userId: event.context.auth.id as number,
+    },
+    include: {
+      user: {
+        select: DefaultUserAttributes,
+      },
     },
   });
 });

@@ -1,5 +1,3 @@
-import { CookieOptions } from 'nuxt/dist/app/composables';
-
 export const KESKUS_TOKEN = 'keskusToken';
 
-export const useAuthCookie = (options?: CookieOptions) => useCookie(KESKUS_TOKEN, options);
+export const useAuthCookie = (options?: any) => useCookie(KESKUS_TOKEN, options);

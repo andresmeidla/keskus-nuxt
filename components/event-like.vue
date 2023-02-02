@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full cursor-pointer flex-row items-center justify-center gap-1" @click.stop="like">
-    <Tooltip :disabled="eventLikes.length === 0">
+    <Tooltip :disabled="localEventLikes.length === 0">
       <span class="flex items-center gap-1">
         <Icon
           :name="userLike ? 'mdi:cards-heart' : 'mdi:cards-heart-outline'"
@@ -16,7 +16,7 @@
             ['w-8']: size === 'xl',
           }"
         />
-        <span>{{ eventLikes.length }}</span>
+        <span>{{ localEventLikes.length }}</span>
       </span>
       <template #tooltip>
         {{ likeUsers.join(', ') }}
@@ -30,7 +30,9 @@ import { PropType } from 'vue';
 
 import { store } from '~~/store';
 
-export type EventType = NonNullable<NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/`>>>>['event']>;
+type EventsEndpointRetType = Awaited<ReturnType<typeof keskusFetch<'/api/events'>>>;
+type EventRetType = EventsEndpointRetType['events'][number];
+type EventLikeRetType = EventRetType['eventLikes'][number];
 
 const props = defineProps({
   eventId: {
@@ -38,7 +40,7 @@ const props = defineProps({
     required: true,
   },
   eventLikes: {
-    type: Object as PropType<EventType['eventLikes']>,
+    type: Object as PropType<EventLikeRetType[]>,
     required: true,
   },
   size: {
@@ -47,18 +49,41 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['updated']);
+const localEventLikes = computed({
+  get: () => props.eventLikes,
+  set: () => {},
+});
 
 const userLike = computed(() => {
-  return props.eventLikes.find((l) => l.userId === store.userId);
+  return localEventLikes.value.find((l) => l.userId === store.userId);
 });
 
 const likeUsers = computed(() => {
-  return props.eventLikes.map((el) => userDisplayName(el.user));
+  return localEventLikes.value.map((el) => userDisplayName(el.user));
 });
 
 async function like() {
+  if (userLike.value) {
+    const likeIndex = localEventLikes.value.findIndex((l) => l.userId === store.userId);
+    if (likeIndex !== -1) {
+      localEventLikes.value.splice(likeIndex, 1);
+    }
+  } else {
+    // add a custom like object to the array
+    // or remove it if it already exists
+    // so that the UI updates immediately, then make a request to the server
+    const like = {
+      id: 0,
+      userId: store.userId,
+      user: store.user,
+      eventId: props.eventId,
+      dislike: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as EventLikeRetType;
+    localEventLikes.value.push(like);
+  }
   await keskusFetch(`/api/events/${props.eventId}/like`, { method: 'POST', body: {} });
-  emit('updated');
+  // localEventLikes.value = await keskusFetch(`/api/events/${props.eventId}/likes`);
 }
 </script>

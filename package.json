@@ -15,10 +15,13 @@
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/tailwindcss": "^6.3.0",
     "@prisma/client": "^4.8.0",
+    "@types/nodemailer": "^6.4.7",
     "@types/toastify-js": "^1.11.1",
+    "@vueup/vue-quill": "^1.0.1",
     "animated-tailwindcss": "^4.0.0",
     "bcryptjs": "^2.4.3",
     "daisyui": "^2.46.0",
+    "date-fns": "^2.29.3",
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-nuxt": "^4.0.0",
@@ -31,6 +34,7 @@
     "jsonwebtoken": "^9.0.0",
     "moment": "^2.29.4",
     "nitropack": "^2.1.0",
+    "nodemailer": "^6.9.1",
     "nuxt": "^3.1.1",
     "nuxt-icon": "^0.1.8",
     "ofetch": "^1.0.0",
@@ -45,9 +49,5 @@
     "toastify-js": "^1.12.0",
     "vue-collapsed": "^1.1.1",
     "zod": "^3.20.2"
-  },
-  "dependencies": {
-    "@vueup/vue-quill": "^1.0.1",
-    "uninstall": "^0.0.0"
   }
 }

@@ -23,36 +23,41 @@
   </div>
 </template>
 <script setup lang="ts">
-type EndpointEvents = Awaited<ReturnType<typeof keskusFetch<'/api/events'>>>['events'];
+type EndpointEvents = Awaited<ReturnType<typeof keskusFetch<'/api/events'>>>;
 
 definePageMeta({
   title: 'Teemad',
   layout: 'default',
 });
 
-const page = ref(1);
+const page = ref(useRoute().query.page ? parseInt(useRoute().query.page as string) : 1);
 const perPage = ref(8);
-const eventData = reactive({
+const eventData = ref<EndpointEvents>({
   count: 0,
-  events: [] as EndpointEvents,
+  events: [],
 });
 
 async function fetchEventList() {
   try {
-    const rsp = await keskusFetch('/api/events', {
+    const rsp = await useKeskusFetch<EndpointEvents>('/api/events', {
+      method: 'GET',
       query: { page: page.value, perPage: perPage.value },
     });
-    eventData.count = rsp.count;
-    eventData.events = rsp.events;
+    if (rsp.data.value) {
+      eventData.value.count = rsp.data.value.count;
+      eventData.value.events = rsp.data.value.events;
+    }
   } catch (err: any) {
     useToastError(err);
   }
 }
+
 await fetchEventList();
 
 watch(
   () => page.value,
   async () => {
+    useRouter().push({ query: { page: page.value } });
     await fetchEventList();
   }
 );

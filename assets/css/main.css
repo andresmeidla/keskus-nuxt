@@ -20,6 +20,10 @@ body {
   @apply shadow-[0_4px_8px_-8px] shadow-gray-900;
 }
 
+div.nuxt-loading-indicator {
+  @apply !h-1;
+}
+
 /*
 .menu-color {
   background-color: #252d3f;

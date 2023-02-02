@@ -1,10 +1,11 @@
-import { NitroFetchRequest } from 'nitropack';
-import { Ref } from 'nuxt/dist/app/compat/capi';
-import { AsyncData, FetchResult, UseFetchOptions } from 'nuxt/dist/app/composables';
-import { KeyOfRes, PickFrom } from 'nuxt/dist/app/composables/asyncData';
+import type { NitroFetchRequest } from 'nitropack';
+import type { Ref } from 'nuxt/dist/app/compat/capi';
+import type { AsyncData, KeyOfRes, PickFrom } from 'nuxt/dist/app/composables/asyncData';
 import { FetchError } from 'ofetch';
 
+import type { FetchResult, UseFetchOptions } from '#app';
 import { Routes } from '~~/lib/routes';
+import { store } from '~~/store';
 
 /* super complex type but needed for the api type infers */
 export function useKeskusFetch<
@@ -16,15 +17,29 @@ export function useKeskusFetch<
   PickKeys extends KeyOfRes<Transform> = KeyOfRes<Transform>
 >(
   request: Ref<ReqT> | ReqT | (() => ReqT),
-  opts?: UseFetchOptions<_ResT, Transform, PickKeys>
-): AsyncData<PickFrom<ReturnType<Transform>, PickKeys>, ErrorT | null>;
-export function useKeskusFetch<ReqT extends NitroFetchRequest = NitroFetchRequest>(url: Ref<ReqT> | ReqT | (() => ReqT)) {
-  const rsp = useFetch(url, { headers: useRequestHeaders() as Record<string, string> });
-  if (rsp.error) {
-    if (rsp.error instanceof FetchError && rsp.error.statusCode === 401) {
-      // redirect to login
-      useRouter().push({ path: Routes.LOGIN, query: { redirect: window.location.pathname } });
-    }
-  }
-  return rsp;
+  opts?: UseFetchOptions<_ResT, Transform, PickKeys, ReqT>
+): AsyncData<PickFrom<ReturnType<Transform>, PickKeys>, ErrorT | null> {
+  store.setLoading(true);
+  const cookieHeaders = useRequestHeaders(['cookie']);
+  const rsp = useFetch(request, {
+    ...opts,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onRequest({ request, options }) {
+      if (process.server) {
+        options.headers = cookieHeaders as Record<string, string>;
+      }
+    },
+  } as UseFetchOptions<_ResT, Transform, PickKeys, ReqT>);
+  return rsp
+    .catch((e: any) => {
+      console.error('useKeskusFetch error', e);
+      if (e instanceof FetchError && e.statusCode === 401) {
+        // redirect to login
+        useRouter().push({ path: Routes.LOGIN, query: { redirect: window.location.pathname } });
+      }
+      throw e;
+    })
+    .finally(() => {
+      store.setLoading(false);
+    }) as AsyncData<PickFrom<ReturnType<Transform>, PickKeys>, ErrorT | null>;
 }

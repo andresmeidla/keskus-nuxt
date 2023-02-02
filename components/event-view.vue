@@ -51,7 +51,7 @@
             <ClientOnly>
               <Editor v-model="body" placeholder="Kirjeldus? *" />
             </ClientOnly>
-            <button class="btn btn-primary" @click="updateEvent">Muuda</button>
+            <button class="btn btn-primary" :disabled="saving" @click="updateEvent">Muuda</button>
           </div>
         </template>
       </div>
@@ -71,7 +71,7 @@ import { PropType } from 'vue';
 
 import { purifyHtml } from '~~/lib/utils';
 
-type EndpointEvent = NonNullable<NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/`>>>>['event']>;
+type EndpointEvent = NonNullable<NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/`>>>>>;
 type EndpointComment = NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/comments/`>>>>[number];
 
 const props = defineProps({
@@ -84,6 +84,7 @@ const props = defineProps({
 const emit = defineEmits(['updated']);
 
 const showErrors = ref(false);
+const saving = ref(false);
 const comments = ref<EndpointComment[]>([]);
 const edit = ref(false);
 
@@ -121,6 +122,7 @@ async function updateEvent() {
     return;
   }
   try {
+    saving.value = true;
     await keskusFetch(`/api/events/${props.event.id}`, {
       method: 'PATCH',
       body: JSON.stringify({
@@ -133,6 +135,8 @@ async function updateEvent() {
     emit('updated');
   } catch (err: any) {
     useToastError(err);
+  } finally {
+    saving.value = false;
   }
 }
 

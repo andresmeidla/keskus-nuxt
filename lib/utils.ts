@@ -1,6 +1,12 @@
-// eslint-disable-next-line import/named
+/* eslint-disable import/no-duplicates */
+// eslint-disable-next-line import/named, simple-import-sort/imports
 import DOMPurify, { Config } from 'isomorphic-dompurify';
-import moment from 'moment';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import setDefaultOptions from 'date-fns/setDefaultOptions';
+import format from 'date-fns/format';
+
+import et from 'date-fns/locale/et';
+setDefaultOptions({ locale: et });
 
 DOMPurify.addHook('uponSanitizeElement', (node: any, data) => {
   if (data.tagName === 'iframe') {
@@ -12,15 +18,15 @@ DOMPurify.addHook('uponSanitizeElement', (node: any, data) => {
 });
 
 export function dateFromNow(date?: string | Date) {
-  return date ? moment(date).fromNow() : 'never';
+  return date ? formatDistanceToNow(new Date(date), { addSuffix: true }) : 'never';
 }
 
 export function timeRegular(date: Date) {
-  return moment(date).format('HH:mm:ss');
+  return format(new Date(date), 'HH:mm:ss');
 }
 
 export function dateFormatted(date: Date) {
-  return moment(date).format('YYYY-MM-DD HH:mm');
+  return format(new Date(date), 'yyyy-MM-dd HH:mm');
 }
 
 export function parseJwt(token: string) {

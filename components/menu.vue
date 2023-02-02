@@ -1,7 +1,7 @@
 <template>
-  <nav v-if="store.user" class="navbar bg-info flex h-fit w-full items-center p-0">
+  <nav v-if="store.user" class="navbar bg-info flex h-[4rem] w-full items-center p-0">
     <div class="navbar-start"></div>
-    <NuxtLink :to="Routes.MAIN" class="navbar-center cursor-pointer duration-200 hover:drop-shadow-xl hover:saturate-50 hover:transition-all">
+    <NuxtLink :to="Routes.MAIN" class="navbar-center cursor-pointer select-none duration-200 hover:drop-shadow-xl hover:saturate-50 hover:transition-all">
       <NuxtImg src="/logo.png" :width="150" />
     </NuxtLink>
     <div class="navbar-end cursor-pointer">

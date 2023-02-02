@@ -16,6 +16,8 @@ export default defineEventHandler(async (event) => {
     })
   );
 
+  const userId = event.context.auth.id;
+
   const [count, events] = await prisma.$transaction([
     prisma.event.count(),
     prisma.event.findMany({
@@ -25,6 +27,32 @@ export default defineEventHandler(async (event) => {
       include: {
         user: {
           select: DefaultUserAttributes,
+        },
+        eventInteractions: {
+          where: {
+            userId,
+          },
+          include: {
+            comment: {
+              select: {
+                createdAt: true,
+              },
+            },
+          },
+        },
+        eventLikes: {
+          include: {
+            user: {
+              select: DefaultUserAttributes,
+            },
+          },
+        },
+        comments: {
+          include: {
+            user: {
+              select: DefaultUserAttributes,
+            },
+          },
         },
         _count: {
           select: { comments: true, eventAttendances: true, eventInteractions: true, eventLikes: true },

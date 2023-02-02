@@ -1,6 +1,6 @@
 <template>
   <div class="relative flex w-full flex-row items-center">
-    <div class="absolute top-0 left-0 mt-1 ml-1">
+    <div v-if="isUserOwner" class="absolute top-0 left-0 mt-1 ml-1">
       <span class="btn btn-sm btn-circle btn-secondary">
         <Icon class="h-5 w-5 cursor-pointer" :name="edit ? 'tabler:edit-off' : 'tabler:edit'" @click="edit = !edit" />
       </span>
@@ -16,7 +16,7 @@
       <div class="flex w-full flex-col justify-center gap-2">
         <Editor v-model="body"></Editor>
         <div class="flex justify-center">
-          <button class="btn btn-primary" @click="updateComment">Muuda</button>
+          <button class="btn btn-primary" :disabled="saving" @click="updateComment">Muuda</button>
         </div>
       </div>
     </template>
@@ -42,6 +42,7 @@ const props = defineProps({
 const emit = defineEmits(['updated']);
 
 const edit = ref(false);
+const saving = ref(false);
 // const showErrors = ref(false);
 
 const editableComment = computed({
@@ -59,6 +60,7 @@ const body = computed({
   },
 });
 
+const isUserOwner = computed(() => props.comment.userId === getUser());
 const purifiedBody = computed(() => purifyHtml(body.value));
 // const purgedBody = computed(() => purgeHtml(purifiedBody.value || ''));
 // const bodyValid = computed(() => purgedBody.value.length >= 3);
@@ -69,6 +71,7 @@ async function updateComment() {
   //   return;
   // }
   try {
+    saving.value = true;
     await keskusFetch(`/api/events/${props.comment.eventId}/comments/${props.comment.id}`, {
       method: 'PATCH',
       body: JSON.stringify({
@@ -79,6 +82,8 @@ async function updateComment() {
     emit('updated');
   } catch (err: any) {
     useToastError(err);
+  } finally {
+    saving.value = false;
   }
 }
 </script>

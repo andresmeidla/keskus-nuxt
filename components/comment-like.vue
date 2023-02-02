@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full cursor-pointer flex-row items-center justify-center gap-1">
-    <Tooltip :disabled="commentLikes.length === 0">
+    <Tooltip :disabled="localCommentLikes.length === 0">
       <span class="flex items-center gap-1" @click.prevent="like">
         <Icon
           :name="userLike ? 'mdi:cards-heart' : 'mdi:cards-heart-outline'"
@@ -17,7 +17,7 @@
             ['w-8']: size === 'xl',
           }"
         />
-        <span>{{ commentLikes.length }}</span>
+        <span>{{ localCommentLikes.length }}</span>
       </span>
       <template #tooltip>
         {{ likeUsers.join(', ') }}
@@ -32,6 +32,7 @@ import { PropType } from 'vue';
 import { store } from '~~/store';
 
 type EndpointComment = NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/comments/`>>>>[number];
+type EndpointCommentLike = EndpointComment['commentLikes'][number];
 
 const props = defineProps({
   eventId: {
@@ -43,7 +44,7 @@ const props = defineProps({
     required: true,
   },
   commentLikes: {
-    type: Object as PropType<EndpointComment['commentLikes']>,
+    type: Object as PropType<EndpointCommentLike[]>,
     required: true,
   },
   size: {
@@ -52,18 +53,41 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['updated']);
+const localCommentLikes = computed({
+  get: () => props.commentLikes,
+  set: () => {},
+});
 
 const userLike = computed(() => {
-  return props.commentLikes.find((l) => l.userId === store.userId);
+  return localCommentLikes.value.find((l) => l.userId === store.userId);
 });
 
 const likeUsers = computed(() => {
-  return props.commentLikes.map((el) => userDisplayName(el.user));
+  return localCommentLikes.value.map((el) => userDisplayName(el.user));
 });
 
 async function like() {
+  if (userLike.value) {
+    const likeIndex = localCommentLikes.value.findIndex((l) => l.userId === store.userId);
+    if (likeIndex !== -1) {
+      localCommentLikes.value.splice(likeIndex, 1); // = localCommentLikes.value.filter((l) => l.userId !== store.userId);
+    }
+  } else {
+    // add a custom like object to the array
+    // or remove it if it already exists
+    // so that the UI updates immediately, then make a request to the server
+    localCommentLikes.value.push({
+      id: 0,
+      userId: store.userId,
+      user: store.user,
+      eventId: props.eventId,
+      commentId: props.commentId,
+      dislike: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as EndpointCommentLike);
+  }
   await keskusFetch(`/api/events/${props.eventId}/comments/${props.commentId}/like`, { method: 'POST', body: {} });
-  emit('updated');
+  // localCommentLikes.value = await keskusFetch(`/api/events/${props.eventId}/comments/${props.commentId}/likes`);
 }
 </script>

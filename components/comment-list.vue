@@ -20,7 +20,7 @@
           </ClientOnly>
           <div class="hidden w-32 sm:flex"></div>
         </div>
-        <button class="btn btn-primary w-fit" @click="addComment">Lisa</button>
+        <button class="btn btn-primary w-fit" :disabled="loading" @click="addComment">Lisa</button>
       </div>
     </Collapse>
     <CommentBox v-for="comment of comments" :key="comment.id" :comment="comment" @updated="emit('updated')" />
@@ -45,9 +45,10 @@ const props = defineProps({
     required: true,
   },
 });
-const emit = defineEmits(['updated']);
+const emit = defineEmits(['updated', 'commentAdded']);
 
 const isExpanded = ref(false);
+const loading = ref(false);
 const newComment = ref('');
 // const showErrors = ref(false);
 let editorUpdateKey = 0;
@@ -62,14 +63,17 @@ async function addComment() {
   //   return;
   // }
   try {
-    await keskusFetch(`/api/events/${props.eventId}/comments`, { method: 'POST', body: { body: purifiedBody } });
+    loading.value = true;
+    await keskusFetch(`/api/events/${props.eventId}/comments`, { method: 'POST', body: { body: purifiedBody.value } });
     newComment.value = '';
     isExpanded.value = false;
     // force the editor to be reloaded because vue-quill does not change the value for some reason
     editorUpdateKey += 1;
-    emit('updated');
+    emit('commentAdded');
   } catch (err: any) {
     useToastError(err);
+  } finally {
+    loading.value = false;
   }
 }
 </script>

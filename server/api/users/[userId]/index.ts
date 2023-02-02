@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
       userId: z.coerce.number(),
     })
   );
-  return prisma.user.findUnique({
+  return prisma.user.findUniqueOrThrow({
     where: {
       id: params.userId,
     },

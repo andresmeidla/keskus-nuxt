@@ -17,10 +17,10 @@
         ></GmapLink>
       </div>
       <ClientOnly>
-        <Editor v-model="eventData.body" placeholder="Kirjeldus? *"></Editor>
+        <Editor :key="editorUpdateKey" v-model="eventData.body" placeholder="Kirjeldus? *"></Editor>
       </ClientOnly>
       <div class="modal-action flex w-full items-center justify-center">
-        <button class="btn btn-primary" @click="saveEvent">Valmis!</button>
+        <button class="btn btn-primary" :disabled="loading" @click="saveEvent">Valmis!</button>
         <label ref="modalClose" for="my-modal" class="btn btn-success hidden"></label>
       </div>
     </div>
@@ -33,6 +33,9 @@ import { store } from '~~/store';
 
 const emit = defineEmits(['newEvent']);
 
+let editorUpdateKey = 0;
+
+const loading = ref(false);
 const user = computed(() => store.user);
 
 const eventData = reactive({ headline: '', location: '', body: '' });
@@ -52,6 +55,7 @@ async function saveEvent() {
     return;
   }
   try {
+    loading.value = true;
     const newEvent = await keskusFetch('/api/events', {
       method: 'POST',
       body: {
@@ -60,6 +64,8 @@ async function saveEvent() {
         ...(eventData.location.length > 0 ? { location: eventData.location } : undefined),
       },
     });
+    // force the editor to be reloaded because vue-quill does not change the value for some reason
+    editorUpdateKey += 1;
     emit('newEvent', newEvent);
     if (modalClose.value) {
       modalClose.value.click();
@@ -69,6 +75,8 @@ async function saveEvent() {
     eventData.location = '';
   } catch (err: any) {
     useToastError(err);
+  } finally {
+    loading.value = false;
   }
 }
 </script>
