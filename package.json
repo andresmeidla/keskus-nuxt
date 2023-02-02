@@ -1,11 +1,12 @@
 {
   "private": true,
   "scripts": {
-    "build": "nuxt build",
+    "build": "npm run prisma:generate && nuxt build",
     "dev": "nuxt dev -o",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare && prisma generate",
+    "postinstall": "nuxt prepare",
+    "prisma:generate": "prisma generate",
     "prisma:init": "prisma migrate dev --name init",
     "prisma:push": "prisma db push"
   },
