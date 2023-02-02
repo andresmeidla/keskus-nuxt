@@ -6,9 +6,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "prisma:generate": "prisma generate",
-    "prisma:init": "prisma migrate dev --name init",
-    "prisma:push": "prisma db push"
+    "prisma:generate": "npx prisma generate",
+    "prisma:init": "npx prisma migrate dev --name init",
+    "prisma:push": "npx prisma db push"
   },
   "devDependencies": {
     "@nuxt/image-edge": "^1.0.0-27840416.dc1ed65",
@@ -40,6 +40,7 @@
     "ofetch": "^1.0.0",
     "prettier": "^2.8.1",
     "prettier-plugin-tailwindcss": "^0.2.1",
+    "prisma": "^4.9.0",
     "stylelint": "^14.16.1",
     "stylelint-config-prettier": "^9.0.4",
     "stylelint-config-standard": "^29.0.0",
@@ -48,5 +49,8 @@
     "toastify-js": "^1.12.0",
     "vue-collapsed": "^1.1.1",
     "zod": "^3.20.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.9.0"
   }
 }

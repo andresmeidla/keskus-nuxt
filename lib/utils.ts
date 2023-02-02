@@ -1,11 +1,9 @@
-/* eslint-disable import/no-duplicates */
 // eslint-disable-next-line import/named, simple-import-sort/imports
 import DOMPurify, { Config } from 'isomorphic-dompurify';
-import formatDistanceToNow from 'date-fns/formatDistanceToNow';
-import setDefaultOptions from 'date-fns/setDefaultOptions';
-import format from 'date-fns/format';
+import { format, formatDistanceToNow, setDefaultOptions } from 'date-fns';
 
-import et from 'date-fns/locale/et';
+import et from 'date-fns/locale/et/index';
+
 setDefaultOptions({ locale: et });
 
 DOMPurify.addHook('uponSanitizeElement', (node: any, data) => {
