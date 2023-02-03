@@ -19,10 +19,6 @@ export const store = reactive({
     this.user = user;
   },
   async initAuth(cookie: CookieRef<any> | undefined = useAuthCookie(), user?: UserInfo | null) {
-    if (useRoute().path.startsWith('/login')) {
-      console.log('on login page, skipping initAuth');
-      return;
-    }
     try {
       if (!this.userId) {
         this.userId = getUser(cookie);
@@ -46,6 +42,10 @@ export const store = reactive({
     } catch (err: any) {
       console.log(err);
       useToastError(err);
+    }
+    if (useRoute().path.startsWith('/login')) {
+      console.log('on login page, skipping redirect');
+      return;
     }
     console.log('Failed to log in, redirecting to login page');
     useRouter().push({ path: '/login', query: { initial: useRoute().path, from: 'initAuth' } });
