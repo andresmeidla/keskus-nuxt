@@ -23,6 +23,9 @@ export default defineEventHandler((event) => {
   if (event.node.req.url?.startsWith('login')) {
     return;
   }
+  if (!pathname.startsWith('/api/')) {
+    return;
+  }
   const allowedRoute = NO_AUTH_ROUTE_REGEXES.find((r) => {
     if (r instanceof RegExp) {
       return new RegExp(r).test(pathname);
