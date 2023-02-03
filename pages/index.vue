@@ -47,6 +47,4 @@ watch(
     await fetchEventList();
   }
 );
-const { $listen } = useNuxtApp();
-$listen('event:created', () => fetchEventList());
 </script>
