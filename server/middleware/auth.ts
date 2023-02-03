@@ -13,7 +13,13 @@ const NO_AUTH_ROUTE_REGEXES = [
 export default defineEventHandler((event) => {
   const parsedUrl = new URL(event.node.req.url ?? '/', useRuntimeConfig().webAddress);
   const pathname = parsedUrl.pathname;
-
+  console.log('!!!!!!!!!!!!!pathname', pathname);
+  if (pathname.startsWith('/login')) {
+    return;
+  }
+  if (pathname.startsWith('login')) {
+    return;
+  }
   const allowedRoute = NO_AUTH_ROUTE_REGEXES.find((r) => {
     if (r instanceof RegExp) {
       return new RegExp(r).test(pathname);
@@ -41,5 +47,5 @@ export default defineEventHandler((event) => {
     throw createError({ statusCode: 401, message: 'Unauthorized' });
   }
   // redirecting
-  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || '' })}`);
+  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || 'none' })}`);
 });
