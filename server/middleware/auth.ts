@@ -41,5 +41,5 @@ export default defineEventHandler((event) => {
     throw createError({ statusCode: 401, message: 'Unauthorized' });
   }
   // redirecting
-  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname })}`);
+  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || '' })}`);
 });
