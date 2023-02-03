@@ -1,8 +1,8 @@
 <template>
   <div v-if="event" class="flex h-full flex-col items-start justify-center gap-2 pl-10">
-    <div class="flex flex-row items-center justify-center">
+    <!-- <div class="flex flex-row items-center justify-center">
       <EventLike :event-id="event.id" :event-likes="event.eventLikes" />
-    </div>
+    </div> -->
     <div class="flex flex-row">
       <div class="indicator">
         <span v-if="newCommentCount > 0" class="indicator-item indicator-start badge badge-neutral px-1 text-xs"> +{{ newCommentCount }} </span>
@@ -14,23 +14,21 @@
             </span>
             <template #tooltip>{{ commentUserNames }}</template>
           </Tooltip>
-          <div class="indicator">
-            <div class="avatar-group -space-x-1.5">
-              <Avatar
-                v-for="user in commentUsers.slice(0, commentUsers.length === 4 ? 4 : 3)"
-                :key="user.id"
-                :user="user"
-                size="sm"
-                :tooltip="userDisplayName(user)"
-                :show-name="false"
-                class="border-2 border-white"
-              />
-              <Tooltip v-if="shouldRenderAdditionalUsersIndicator">
-                <span
-                  class="indicator-item text-neutral-content flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#0E7490] text-xs"
-                >
-                  +{{ additionalUserCount }}
-                </span>
+          <div class="avatar-group -space-x-1.5">
+            <Avatar
+              v-for="user in commentUsers.slice(0, commentUsers.length === 4 ? 4 : 3)"
+              :key="user.id"
+              :user="user"
+              size="sm"
+              :tooltip="userDisplayName(user)"
+              :show-name="false"
+              class="border-2 border-white"
+            />
+            <div v-if="shouldRenderAdditionalUsersIndicator" class="avatar placeholder h-[29px] w-[29px] border-2 border-white">
+              <Tooltip>
+                <div class="bg-neutral-focus text-neutral-content flex h-full w-full items-center justify-center bg-[#0E7490]">
+                  <span>+{{ additionalUserCount }}</span>
+                </div>
                 <template #tooltip>
                   <span>
                     {{ additionalUserNames }}
@@ -38,6 +36,18 @@
                 </template>
               </Tooltip>
             </div>
+            <!-- <Tooltip v-if="shouldRenderAdditionalUsersIndicator">
+              <span
+                class="indicator-item text-neutral-content flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#0E7490] text-xs"
+              >
+                +{{ additionalUserCount }}
+              </span>
+              <template #tooltip>
+                <span>
+                  {{ additionalUserNames }}
+                </span>
+              </template>
+            </Tooltip> -->
           </div>
         </div>
       </div>

@@ -5,8 +5,13 @@
         <div
           v-for="(event, index) of events"
           :key="event.headline"
-          class="hover-styled border-b-2 bg-gray-100"
-          :class="{ ['rounded-t-lg']: index === 0, ['rounded-b-lg']: index === events.length - 1 }"
+          class="hover-styled py-1"
+          :class="{
+            ['rounded-t-lg']: index === 0,
+            ['rounded-b-lg']: index === events.length - 1,
+            ['bg-white']: index % 2 === 0,
+            ['bg-gray-100']: index % 2 === 1,
+          }"
         >
           <EventListRow :event="event" />
         </div>

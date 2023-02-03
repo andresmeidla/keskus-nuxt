@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 html {
   min-height: 100vh;
 }
@@ -21,45 +22,9 @@ body {
 }
 
 div.nuxt-loading-indicator {
-  @apply !h-1;
-}
-
-/*
-.menu-color {
-  background-color: #252d3f;
-}
-
-:root {
-  --fk-max-width-input: 100rem;
-}
-
-#__nuxt {
-  min-height: 100vh;
-}
-
-#keskus {
-  min-height: 100vh;
-}
-
-.card {
-  @apply bg-base-100 opacity-95 shadow-md rounded-md;
+  height: 0.25rem/* 4px */ !important;
 }
 
 a {
-  @apply text-primary;
+  @apply link link-info
 }
-
-a:link {
-  text-decoration: none;
-}
-a:link:visited {
-  text-decoration: none;
-}
-
-.text-muted {
-  @apply text-slate-500;
-}
-
-.hover-clickable {
-  @apply hover:opacity-70;
-}*/

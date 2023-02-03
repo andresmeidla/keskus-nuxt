@@ -1,12 +1,12 @@
 <template>
   <div class="attendance flex w-full flex-col text-center sm:flex-row">
-    <div v-for="(label, state) of attendanceLabels" :key="state" class="flex w-full flex-col items-center justify-start gap-2">
+    <div v-for="(label, state) of attendanceLabels" :key="state" class="flex w-full flex-col items-center justify-start gap-4">
       <span
         class="badge text-md flex w-fit cursor-pointer select-none flex-row gap-1 p-3 duration-75 hover:drop-shadow-lg hover:saturate-50 hover:transition-all"
         :class="{
-          'badge-success': attendanceStyle[state] === 'success',
+          // 'badge-success': attendanceStyle[state] === 'success',
           'badge-secondary': attendanceStyle[state] === 'secondary',
-          'badge-accent': attendanceStyle[state] === 'accent',
+          // 'badge-accent': attendanceStyle[state] === 'accent',
         }"
         @click="setAttendance(state)"
       >
@@ -32,14 +32,14 @@ import { AttendanceState } from '../server/lib/entity-types';
 type EndpointEventAttendance = NonNullable<NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/`>>>>>['eventAttendances'][number];
 
 const attendanceStyle = {
-  [AttendanceState.Going]: 'success',
+  [AttendanceState.Going]: 'secondary',
   [AttendanceState.Maybe]: 'secondary',
-  [AttendanceState.Not]: 'accent',
+  [AttendanceState.Not]: 'secondary',
 } as const;
 
 const attendanceLabels = {
   [AttendanceState.Going]: 'Osalen',
-  [AttendanceState.Maybe]: 'Võibolla?',
+  [AttendanceState.Maybe]: 'Võib-olla?',
   [AttendanceState.Not]: 'Seekord mitte',
 } as const;
 
@@ -115,7 +115,7 @@ async function setAttendance(state: AttendanceState) {
 
 <style scoped>
 .attendance > div > div {
-  @apply flex items-center justify-center p-2 px-4;
+  @apply flex items-center justify-center px-4;
 }
 :deep(.user-avatar .avatar-name) {
   @apply font-bold;

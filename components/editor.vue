@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <div class="editor flex w-full flex-col" :class="[props.class, { 'validation-error': validationError }]">
-      <QuillEditor v-model:content="localValue" theme="snow" content-type="html" :options="{ placeholder }" :toolbar="toolbar" />
+      <QuillEditor ref="editor" v-model:content="localValue" theme="snow" content-type="html" :options="{ placeholder }" :toolbar="toolbar" />
     </div>
   </div>
 </template>
@@ -46,6 +46,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  overrideTabIndex: {
+    type: [Number, String],
+    default: '0',
+  },
+  focus: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -58,16 +66,36 @@ const localValue = computed({
     emit('update:modelValue', value);
   },
 });
+
+const editor = ref<any | null>(null);
+onMounted(() => {
+  const el = document.querySelector('.ql-editor');
+  if (el) {
+    if (props.overrideTabIndex) {
+      if (process.client && document) {
+        el.setAttribute('tabindex', props.overrideTabIndex.toString());
+      }
+    }
+    if (props.focus) {
+      setTimeout(() => {
+        (el as any).focus();
+      }, 300);
+    }
+  }
+});
 </script>
 <style scoped>
 :deep(.ql-tooltip input) {
   @apply border-none bg-inherit outline-none;
 }
 :deep(.ql-toolbar) {
-  @apply input input-bordered h-[4rem] rounded-b-none;
+  @apply input input-bordered h-[9rem] rounded-b-none sm:h-[4rem];
 }
 :deep(.ql-container) {
-  @apply input input-bordered rounded-t-none border-t-0 pb-2;
+  @apply input input-bordered rounded-t-none border-t-0 pb-2 pt-2;
+}
+:deep(.ql-editor) {
+  @apply p-0;
 }
 :deep(.ql-container) {
   min-height: 6rem;

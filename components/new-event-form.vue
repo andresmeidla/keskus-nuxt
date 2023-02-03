@@ -1,23 +1,25 @@
 <template>
   <div class="flex flex-row items-center justify-center p-2">
-    <div v-if="user" class="pl-2"><Avatar size="lg" :user="user"></Avatar></div>
-    <div class="form-control flex w-full flex-col items-center justify-center gap-2 px-10">
+    <div v-if="user" class="hidden pl-2 sm:block"><Avatar size="lg" :user="user"></Avatar></div>
+    <div class="form-control flex w-full flex-col items-center justify-center gap-2 sm:px-10">
       <input
         v-model="eventData.headline"
+        v-focus
+        tabindex="1"
         type="text"
         placeholder="Mis? *"
         class="input input-bordered w-full"
         :class="{ 'input-error': !headlineValid && showErrors }"
       />
       <div class="input input-bordered flex w-full items-center justify-center gap-2">
-        <input v-model="eventData.location" class="bg-secondary w-full border-0 outline-none focus:border-0" placeholder="Kus?" />
+        <input v-model="eventData.location" tabindex="2" class="bg-secondary w-full border-0 outline-none focus:border-0" placeholder="Kus?" />
         <GmapLink
           :class="{ 'saturate-0': eventData.location.length === 0, 'animate-[heartBeat_1s_cubic-bezier(0,_0,_0.1,_1)_0.1s]': eventData.location.length > 0 }"
           :address="eventData.location"
         ></GmapLink>
       </div>
       <ClientOnly>
-        <Editor :key="editorUpdateKey" v-model="eventData.body" placeholder="Kirjeldus? *"></Editor>
+        <Editor :key="editorUpdateKey" v-model="eventData.body" placeholder="Kirjeldus? *" override-tab-index="3"></Editor>
       </ClientOnly>
       <div class="modal-action flex w-full items-center justify-center">
         <button class="btn btn-primary" :disabled="loading" @click="saveEvent">Valmis!</button>
@@ -31,7 +33,7 @@
 import { purifyHtml } from '~~/lib/utils';
 import { store } from '~~/store';
 
-const emit = defineEmits(['newEvent']);
+const emit = defineEmits(['eventCreated']);
 
 let editorUpdateKey = 0;
 
@@ -66,13 +68,14 @@ async function saveEvent() {
     });
     // force the editor to be reloaded because vue-quill does not change the value for some reason
     editorUpdateKey += 1;
-    emit('newEvent', newEvent);
+    emit('eventCreated', newEvent);
     if (modalClose.value) {
       modalClose.value.click();
     }
     eventData.headline = '';
     eventData.body = '';
     eventData.location = '';
+    useRouter().push(`/events/${newEvent.id}`);
   } catch (err: any) {
     useToastError(err);
   } finally {

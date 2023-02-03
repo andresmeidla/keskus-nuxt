@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     },
   });
   if (!user || !(await bcrypt.compare(body.password, user.password))) {
-    throw createError({ statusCode: 401 });
+    throw createError({ statusCode: 401, message: 'You shall not pass!' });
   }
   // valid user
   return {

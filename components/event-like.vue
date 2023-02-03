@@ -1,10 +1,11 @@
 <template>
-  <div class="flex w-full cursor-pointer flex-row items-center justify-center gap-1" @click.stop="like">
+  <div class="cursor-pointer" @click.stop="like">
     <Tooltip :disabled="localEventLikes.length === 0">
-      <span class="flex items-center gap-1">
+      <span class="flex items-center gap-1 duration-75 hover:transition-all">
         <Icon
           :name="userLike ? 'mdi:cards-heart' : 'mdi:cards-heart-outline'"
           :class="{
+            ['hover:text-gray-500']: !userLike,
             ['text-red-600']: userLike,
             ['h-4']: size === 'sm',
             ['w-4']: size === 'sm',

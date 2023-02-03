@@ -1,19 +1,19 @@
 <template>
-  <div class="grid h-[5.1rem] w-full cursor-pointer grid-cols-12 gap-2 py-1" :class="{ 'bg-white': isNewEvent }" @click="eventLink?.click()">
-    <div class="col-span-4 flex items-center justify-center sm:col-span-2">
+  <div class="flex h-[5.1rem] w-full cursor-pointer flex-row gap-2 py-1" @click="eventLink?.click()">
+    <div class="flex w-40 items-center justify-center">
       <Avatar :user="event.user" :date="new Date(event.createdAt)"></Avatar>
     </div>
-    <div class="col-span-7 flex flex-col justify-center xl:col-span-8">
-      <div class="flex flex-row items-center text-lg">
-        <span class="overflow-hidden text-ellipsis whitespace-nowrap" :class="{ ['font-semibold']: isNewEvent }">
+    <div class="flex flex-1 flex-col justify-center truncate">
+      <div class="flex w-full flex-row items-center text-lg">
+        <div class="w-full truncate" :class="{ ['font-semibold']: isNewEvent }">
           {{ event.headline }}
-        </span>
+        </div>
       </div>
-      <span v-if="event.location" class="flex flex-row gap-1 text-sm font-light hover:saturate-50"
-        ><GmapLink :address="event.location" size="sm"></GmapLink>{{ event.location }}</span
-      >
+      <span v-if="event.location" class="flex flex-row gap-1 text-sm font-light hover:saturate-50">
+        <GmapLink :address="event.location" size="sm"></GmapLink><span class="truncate">{{ event.location }}</span>
+      </span>
     </div>
-    <div class="col-span-3 hidden overflow-clip lg:block xl:col-span-2">
+    <div class="hidden w-52 lg:block">
       <EventInfoPanel :event="event" />
     </div>
     <NuxtLink class="hidden" :to="`/events/${event.id}`"><span ref="eventLink">a</span></NuxtLink>

@@ -12,7 +12,7 @@ import { store } from './store';
 
 useHead({
   title: 'keskus',
-  htmlAttrs: { lang: 'en' },
+  htmlAttrs: { lang: 'et' },
 });
 try {
   await store.initAuth();

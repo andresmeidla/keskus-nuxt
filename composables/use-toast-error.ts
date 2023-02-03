@@ -1,10 +1,12 @@
 import Toastify from 'toastify-js';
 
-export const useToastError = (rsp: Error & { data?: any }) => {
-  console.error('Error', rsp.message, JSON.stringify(rsp.data, null, 2));
+export const useToastError = (err: Error & { data?: any }) => {
+  console.error('Error', err.message, JSON.stringify(err.data, null, 2));
   if (process.client) {
+    const text =
+      err.data?.statusCode === 401 ? '<img src="/gandalf.jpg" alt="gandalf" style="height:10rem;width:auto" />' : `<h1>${err.data.message ?? err.message}</h1>`;
     Toastify({
-      text: `<h1>${rsp.message}</h1>`,
+      text,
       gravity: 'top',
       position: 'right',
       stopOnFocus: true,

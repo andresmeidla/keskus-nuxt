@@ -1,11 +1,6 @@
 <template>
-  <div class="relative flex w-full flex-row items-center">
-    <div v-if="isUserOwner" class="absolute top-0 left-0 mt-1 ml-1">
-      <span class="btn btn-sm btn-circle btn-secondary">
-        <Icon class="h-5 w-5 cursor-pointer" :name="edit ? 'tabler:edit-off' : 'tabler:edit'" @click="edit = !edit" />
-      </span>
-    </div>
-    <div class="flex w-32 items-center justify-center sm:w-52">
+  <div class="flex w-full flex-row items-center">
+    <div v-if="!edit" class="flex w-32 items-center justify-center sm:w-52">
       <Avatar :user="comment.user" :date="new Date(comment.createdAt)"></Avatar>
     </div>
     <template v-if="!edit">
@@ -13,14 +8,19 @@
       <div class="w-full" v-html="purifiedBody"></div>
     </template>
     <template v-else>
-      <div class="flex w-full flex-col justify-center gap-2">
+      <div class="flex w-full flex-col justify-center gap-2 px-2">
         <Editor v-model="body"></Editor>
         <div class="flex justify-center">
           <button class="btn btn-primary" :disabled="saving" @click="updateComment">Muuda</button>
         </div>
       </div>
     </template>
-    <div class="hidden w-32 sm:block">
+    <div class="w-16 items-center gap-2 px-2 sm:flex sm:w-32 sm:flex-row sm:justify-end sm:pr-5">
+      <div v-if="isUserOwner" class="">
+        <span class="btn btn-sm btn-circle btn-secondary">
+          <Icon class="h-5 w-5 cursor-pointer" :name="edit ? 'tabler:edit-off' : 'tabler:edit'" @click="edit = !edit" />
+        </span>
+      </div>
       <CommentLike :event-id="comment.eventId" :comment-id="comment.id" :comment-likes="comment.commentLikes" @updated="emit('updated')"></CommentLike>
     </div>
   </div>

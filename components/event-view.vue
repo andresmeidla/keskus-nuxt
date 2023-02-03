@@ -1,28 +1,21 @@
 <template>
   <div class="flex w-full flex-col gap-4">
-    <div class="relative flex w-full flex-col items-center justify-center gap-2 p-4 sm:flex-row">
-      <template v-if="isUserOwner">
-        <div class="absolute top-0 left-0 mt-1 ml-1">
-          <span class="btn btn-sm btn-circle btn-secondary" @click="edit = !edit">
-            <Icon class="h-5 w-5 cursor-pointer" :name="edit ? 'tabler:edit-off' : 'tabler:edit'" />
-          </span>
-        </div>
-      </template>
-      <div class="flex w-52 flex-col items-center justify-center gap-2">
+    <div class="relative flex w-full flex-col items-center justify-center sm:flex-row">
+      <div class="flex h-full w-52 flex-col items-center justify-start gap-2 p-2 pt-6">
         <Avatar :user="event.user" :date="new Date(event.createdAt)" size="xl"></Avatar>
       </div>
-      <div class="mt-4 flex w-full flex-col items-center justify-center gap-1">
+      <div class="flex h-full w-full flex-col items-center justify-start gap-1 truncate pt-6">
         <template v-if="!edit">
-          <div class="flex w-full items-center justify-center sm:justify-start">
-            <span class="custom-underlined w-fit text-lg font-bold">{{ event.headline }}</span>
+          <div class="flex w-full items-center justify-center px-2 sm:justify-start sm:p-0">
+            <div class="custom-underlined w-full whitespace-normal break-words text-lg font-bold">{{ event.headline }}</div>
           </div>
-          <div v-if="event.location" class="mt-2 flex w-full items-center justify-center gap-2 text-sm sm:justify-start">
+          <div v-if="event.location" class="mt-2 flex w-full items-center justify-center gap-2 truncate px-2 text-sm sm:justify-start sm:px-0">
             <GmapLink :address="event.location"></GmapLink>
-            {{ event.location }}
+            <span class="truncate">{{ event.location }}</span>
           </div>
-          <div class="flex w-full flex-col items-center justify-start gap-2">
+          <div class="flex w-full flex-col items-center justify-start gap-2 px-2 sm:px-0">
             <!-- eslint-disable-next-line vue/no-v-html -->
-            <div class="w-full pt-4" v-html="purifiedBody"></div>
+            <div class="w-full pt-3" v-html="purifiedBody"></div>
           </div>
         </template>
         <template v-else>
@@ -55,11 +48,18 @@
           </div>
         </template>
       </div>
-      <div class="flex w-32 flex-col items-center gap-2">
+      <div class="flex w-32 flex-row justify-center gap-2 sm:items-end sm:px-5">
+        <template v-if="isUserOwner">
+          <div class="">
+            <span class="btn btn-sm btn-circle btn-secondary" @click="edit = !edit">
+              <Icon class="h-5 w-5 cursor-pointer" :name="edit ? 'tabler:edit-off' : 'tabler:edit'" />
+            </span>
+          </div>
+        </template>
         <EventLike :event-id="event.id" :event-likes="event.eventLikes" size="xl" @updated="emit('updated')"></EventLike>
       </div>
     </div>
-    <div class="divider my-2 mx-8"></div>
+    <div class="divider my-0 mx-8"></div>
     <div class="flex w-full flex-row">
       <EventAttendanceList :event-id="event.id" :event-attendances="event.eventAttendances" @updated="emit('updated')"></EventAttendanceList>
     </div>

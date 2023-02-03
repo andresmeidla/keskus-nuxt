@@ -1,0 +1,83 @@
+<template>
+  <div class="flex w-full flex-col items-center justify-center gap-2 p-2 pb-4">
+    <div
+      class="badge flex cursor-pointer select-none items-center justify-center gap-1 p-3 duration-75 hover:drop-shadow-lg hover:saturate-50 hover:transition-all"
+      :class="{ 'badge-secondary': isExpanded, 'badge-primary': !isExpanded }"
+      @click="
+        () => {
+          isExpanded = !isExpanded;
+        }
+      "
+    >
+      <div class="flex flex-row items-center justify-center gap-1"><Icon class="h-5 w-5" name="material-symbols:add-circle-rounded" /> Lisa kommentaar</div>
+    </div>
+    <Collapse :when="isExpanded" class="collapse grid w-full grid-cols-1 justify-center p-0 px-2">
+      <div class="flex w-full flex-col items-center justify-center gap-2">
+        <div class="flex w-full flex-row">
+          <div class="hidden w-52 items-center justify-center sm:flex">
+            <Avatar v-if="store.user" :user="store.user" />
+          </div>
+          <ClientOnly>
+            <Editor v-if="isExpanded" :key="editorUpdateKey" v-model="newComment" override-tab-index="1" focus></Editor>
+          </ClientOnly>
+          <div class="hidden w-32 sm:flex"></div>
+        </div>
+        <button class="btn btn-primary w-fit" :disabled="loading" @click="addComment">Lisa</button>
+      </div>
+    </Collapse>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { purifyHtml } from '~~/lib/utils';
+
+import { store } from '../store';
+
+const props = defineProps({
+  eventId: { type: Number, required: true },
+});
+const emit = defineEmits(['commentAdded']);
+const isExpanded = ref(false);
+const loading = ref(false);
+const newComment = ref('');
+// const showErrors = ref(false);
+let editorUpdateKey = 0;
+
+const purifiedBody = computed(() => purifyHtml(newComment.value));
+// const purgedBody = computed(() => purgeHtml(purifiedBody.value));
+// const bodyValid = computed(() => purgedBody.value.length >= 3);
+
+async function addComment() {
+  // if (!bodyValid.value) {
+  //   showErrors.value = true;
+  //   return;
+  // }
+  try {
+    loading.value = true;
+    await keskusFetch(`/api/events/${props.eventId}/comments`, { method: 'POST', body: { body: purifiedBody.value } });
+    newComment.value = '';
+    isExpanded.value = false;
+    // force the editor to be reloaded because vue-quill does not change the value for some reason
+    editorUpdateKey += 1;
+    emit('commentAdded');
+  } catch (err: any) {
+    useToastError(err);
+  } finally {
+    loading.value = false;
+  }
+}
+</script>
+<style scoped>
+.collapse {
+  transition: height var(--vc-auto-duration) cubic-bezier(0.37, 0, 0.63, 1);
+}
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>
