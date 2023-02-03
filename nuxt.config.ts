@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   modules: ['@nuxt/image-edge', 'nuxt-icon', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode'],
   runtimeConfig: {
     jwtSecret: '0h23tg9f7hwab19g72',
-    webAddress: 'https://keskus2.meidla.com',
+    webAddress: 'https://keskus.meidla.com',
     emailPassword: 'password',
     emailAddress: 'keskus.mail@gmail.com',
     emailSender: '"Keskus" <keskus.mail@gmail.com>',
