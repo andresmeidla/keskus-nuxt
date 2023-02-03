@@ -13,7 +13,7 @@
             <GmapLink :address="event.location"></GmapLink>
             <span class="truncate">{{ event.location }}</span>
           </div>
-          <div class="flex w-full flex-col items-center justify-start gap-2 px-2 sm:px-0">
+          <div class="flex w-full flex-col items-center justify-start gap-2 whitespace-normal break-words px-2 sm:px-0">
             <!-- eslint-disable-next-line vue/no-v-html -->
             <div class="w-full pt-3" v-html="purifiedBody"></div>
           </div>
