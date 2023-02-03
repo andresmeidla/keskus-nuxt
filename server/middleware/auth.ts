@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-const cfg = useRuntimeConfig();
-
 const NO_AUTH_ROUTE_REGEXES = [
   // allow /login with query parameters
   /\/login.*/g,
@@ -13,11 +11,16 @@ const NO_AUTH_ROUTE_REGEXES = [
 export default defineEventHandler((event) => {
   const parsedUrl = new URL(event.node.req.url ?? '/', useRuntimeConfig().webAddress);
   const pathname = parsedUrl.pathname;
-  console.log('!!!!!!!!!!!!!pathname', pathname);
   if (pathname.startsWith('/login')) {
     return;
   }
   if (pathname.startsWith('login')) {
+    return;
+  }
+  if (event.node.req.url?.startsWith('/login')) {
+    return;
+  }
+  if (event.node.req.url?.startsWith('login')) {
     return;
   }
   const allowedRoute = NO_AUTH_ROUTE_REGEXES.find((r) => {
@@ -34,7 +37,7 @@ export default defineEventHandler((event) => {
   const authCookie = getCookie(event, 'keskusToken');
   if (authCookie) {
     try {
-      const decoded = jwt.verify(authCookie, cfg.jwtSecret);
+      const decoded = jwt.verify(authCookie, useRuntimeConfig().jwtSecret);
       if (decoded) {
         event.context.auth = decoded;
         return;

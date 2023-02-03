@@ -19,27 +19,36 @@ export const store = reactive({
     this.user = user;
   },
   async initAuth(cookie: CookieRef<any> | undefined = useAuthCookie(), user?: UserInfo | null) {
-    if (!this.userId) {
-      this.userId = getUser(cookie);
+    if (useRoute().path.startsWith('/login')) {
+      console.log('on login page, skipping initAuth');
+      return;
     }
-    if (this.userId) {
-      store.setUserId(this.userId);
-      if (!user) {
-        try {
+    try {
+      if (!this.userId) {
+        this.userId = getUser(cookie);
+      }
+      if (this.userId) {
+        store.setUserId(this.userId);
+        if (!user) {
           const rsp = await useKeskusFetch(`/api/users/${this.userId}`);
           if (rsp.data.value) {
             store.setUser(rsp.data.value);
+            return;
           }
           if (rsp.error.value) {
             throw rsp.error.value;
           }
-        } catch (err: any) {
-          useToastError(err);
+        } else {
+          store.setUser(user);
+          return;
         }
-      } else {
-        store.setUser(user);
       }
+    } catch (err: any) {
+      console.log(err);
+      useToastError(err);
     }
+    console.log('Failed to log in, redirecting to login page');
+    useRouter().push({ path: '/login', query: { initial: useRoute().path, from: 'initAuth' } });
   },
   setLoading(loading: boolean) {
     this.loading.value = loading;
