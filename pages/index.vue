@@ -28,7 +28,7 @@ async function fetchEventList() {
     const rsp = await useKeskusFetch<EndpointEvents>('/api/events', {
       method: 'GET',
       query: { page: page.value, perPage: perPage.value },
-      // redirectOnError: false,
+      redirectOnError: false,
     });
     if (rsp.data.value) {
       eventData.value.count = rsp.data.value.count;

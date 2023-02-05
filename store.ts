@@ -51,7 +51,7 @@ export const store = reactive({
     }
     // eslint-disable-next-line no-console
     console.log('Failed to log in:', 'userId', this.userId, 'user', this.user);
-    // useRouter().push({ path: '/login', query: { initial: useRoute().path, from: 'initAuth' } });
+    useRouter().push({ path: '/login', query: { initial: useRoute().path, from: 'initAuth' } });
   },
   setLoading(loading: boolean) {
     this.loading.value = loading;
