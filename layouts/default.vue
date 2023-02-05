@@ -7,5 +7,13 @@
     </div>
   </div>
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { store } from '~~/store';
+
+try {
+  await store.initAuth();
+} catch (err: any) {
+  // useToastError(err);
+}
+</script>
 <style scoped></style>

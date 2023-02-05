@@ -8,17 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import { store } from './store';
-
 useHead({
   title: 'keskus',
   htmlAttrs: { lang: 'et' },
 });
-try {
-  await store.initAuth();
-} catch (err: any) {
-  // useToastError(err);
-}
 </script>
 <style scoped>
 #keskus {
