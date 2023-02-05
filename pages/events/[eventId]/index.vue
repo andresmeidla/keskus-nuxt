@@ -53,7 +53,11 @@ async function saveInteraction(options?: { redirectOnError?: boolean }) {
 }
 
 try {
-  await Promise.all([getEvent({ redirectOnError: false }), fetchComments({ redirectOnError: false }), saveInteraction({ redirectOnError: false })]);
+  await Promise.all([
+    getEvent(/* { redirectOnError: false } */),
+    fetchComments(/* { redirectOnError: false } */),
+    saveInteraction(/* { redirectOnError: false } */),
+  ]);
 } catch (err: any) {
   console.error(err);
   // useToastError(err);
