@@ -4,6 +4,7 @@ const NO_AUTH_ROUTE_REGEXES = [
   // allow /login with query parameters
   /\/login.*/g,
   '/api/login',
+  'api/login',
   /\/_ipx\/.*/g,
   /\/__nuxt_error\?.*/g,
 ];
@@ -23,9 +24,9 @@ export default defineEventHandler((event) => {
   if (event.node.req.url?.startsWith('login')) {
     return;
   }
-  if (!pathname.startsWith('/api')) {
+  /* if (!pathname.startsWith('/api')) {
     return;
-  }
+  } */
   const allowedRoute = NO_AUTH_ROUTE_REGEXES.find((r) => {
     if (r instanceof RegExp) {
       return new RegExp(r).test(pathname);

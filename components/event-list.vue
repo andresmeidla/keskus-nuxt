@@ -9,8 +9,8 @@
           :class="{
             ['rounded-t-lg']: index === 0,
             ['rounded-b-lg']: index === events.length - 1,
-            ['bg-white']: index % 2 === 0,
-            ['bg-gray-100']: index % 2 === 1,
+            ['bg-gray-100']: index % 2 === 0,
+            ['bg-gray-200']: index % 2 === 1,
           }"
         >
           <EventListRow :event="event" />

@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output =  env("PRISMA_OUT")
+  output   = env("PRISMA_OUT")
 }
 
 datasource db {
@@ -42,16 +42,15 @@ model Event {
   hidden            Boolean            @default(false)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @default(now())
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   comments          Comment[]
   eventAttendances  EventAttendance[]
   eventInteractions EventInteraction[]
   eventLikes        EventLike[]
-
-  @@map("Events")
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([createdAt(sort: Desc)])
+  @@map("Events")
 }
 
 model EventLike {
@@ -60,14 +59,13 @@ model EventLike {
   dislike   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, eventId])
-  @@map("EventLikes")
-  
   @@index([userId])
   @@index([eventId])
+  @@map("EventLikes")
 }
 
 model Comment {
@@ -78,16 +76,15 @@ model Comment {
   hidden            Boolean            @default(false)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @default(now())
-  event             Event              @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   commentLikes      CommentLike[]
+  event             Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   eventInteractions EventInteraction[]
-
-  @@map("Comments")
 
   @@index([userId])
   @@index([eventId])
   @@index([createdAt(sort: Desc)])
+  @@map("Comments")
 }
 
 model EventInteraction {
@@ -96,16 +93,15 @@ model EventInteraction {
   lastCommentId Int?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now())
-  comment       Comment? @relation(fields: [lastCommentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  comment       Comment? @relation(fields: [lastCommentId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, eventId])
-  @@map("EventInteractions")
-
   @@index([userId])
   @@index([eventId])
   @@index([lastCommentId])
+  @@map("EventInteractions")
 }
 
 model EventAttendance {
@@ -114,14 +110,13 @@ model EventAttendance {
   state     String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, eventId])
-  @@map("EventAttendances")
-
   @@index([userId])
   @@index([eventId])
+  @@map("EventAttendances")
 }
 
 model CommentLike {
@@ -130,12 +125,11 @@ model CommentLike {
   dislike   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, commentId])
-  @@map("CommentLikes")
-
   @@index([userId])
   @@index([commentId])
+  @@map("CommentLikes")
 }

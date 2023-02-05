@@ -28,13 +28,14 @@ async function fetchEventList() {
     const rsp = await useKeskusFetch<EndpointEvents>('/api/events', {
       method: 'GET',
       query: { page: page.value, perPage: perPage.value },
+      redirectOnError: false,
     });
     if (rsp.data.value) {
       eventData.value.count = rsp.data.value.count;
       eventData.value.events = rsp.data.value.events;
     }
   } catch (err: any) {
-    useToastError(err);
+    // useToastError(err);
   }
 }
 

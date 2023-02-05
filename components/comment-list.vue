@@ -8,8 +8,8 @@
       :class="{
         ['py-2']: index % 2 === 0,
         ['rounded-b-lg']: index === comments.length - 1,
-        ['bg-white']: index % 2 === 0,
-        ['bg-gray-100']: index % 2 === 1,
+        ['bg-gray-100']: index % 2 === 0,
+        ['bg-gray-200']: index % 2 === 1,
       }"
       @updated="emit('updated')"
     />

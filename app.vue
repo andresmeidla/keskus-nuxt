@@ -17,7 +17,7 @@ useHead({
 try {
   await store.initAuth();
 } catch (err: any) {
-  useToastError(err);
+  // useToastError(err);
 }
 </script>
 <style scoped>

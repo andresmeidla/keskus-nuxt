@@ -4,7 +4,7 @@
       <EventView v-if="event" :event="event" />
       <div class="divider my-0 mx-8"></div>
       <div class="w-full">
-        <CommentAdd v-if="eventId" :event-id="eventId" @comment-added="fetchComments"></CommentAdd>
+        <CommentAdd v-if="eventId" :event-id="eventId" @comment-added="commentAdded"></CommentAdd>
       </div>
       <div class="w-full">
         <CommentList v-if="eventId" :event-id="eventId" :comments="comments"></CommentList>
@@ -14,8 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { FetchError } from 'ofetch';
-
 import { Routes } from '~~/lib/routes';
 
 type EndpointEvent = Awaited<ReturnType<typeof keskusFetch<'/api/events/:stringId'>>>;
@@ -29,50 +27,40 @@ const eventId = computed(() => {
 
 const event = ref<EndpointEvent>();
 
-async function getEvent() {
-  try {
-    const rsp = await useKeskusFetch<EndpointEvent>(`/api/events/${eventId.value}`, { method: 'get' });
-    if (rsp.data.value) {
-      event.value = rsp.data.value;
-    }
-    if (rsp.error.value) {
-      throw rsp.error.value;
-    }
-  } catch (err: any) {
-    if (err instanceof FetchError) {
-      if (err.statusCode === 404) {
-        return useRouter().push(Routes.MAIN);
-      }
-    }
-    useToastError(err);
+async function getEvent(options?: { redirectOnError?: boolean }) {
+  const rsp = await useKeskusFetch<EndpointEvent>(`/api/events/${eventId.value}`, { method: 'get', ...options });
+  if (rsp.data.value) {
+    event.value = rsp.data.value;
+  }
+  if (rsp.error.value) {
+    throw rsp.error.value;
   }
 }
 
 const comments = ref<EndpointComment[]>([]);
-async function fetchComments() {
-  try {
-    const rsp = await useKeskusFetch<EndpointComment[]>(`/api/events/${eventId.value}/comments`);
-    if (rsp.data.value) {
-      comments.value = rsp.data.value;
-    }
-    if (rsp.error.value) {
-      throw rsp.error.value;
-    }
-  } catch (err: any) {
-    useToastError(err);
+async function fetchComments(options?: { redirectOnError?: boolean }) {
+  const rsp = await useKeskusFetch<EndpointComment[]>(`/api/events/${eventId.value}/comments`, { ...options });
+  if (rsp.data.value) {
+    comments.value = rsp.data.value;
+  }
+  if (rsp.error.value) {
+    throw rsp.error.value;
   }
 }
 
-async function saveInteraction() {
-  try {
-    await keskusFetch(`/api/events/${eventId.value}/interact`, { method: 'POST', body: {} });
-  } catch (err: any) {
-    // useToastError(err);
-    console.warn('Interaction save failed', err.message);
-  }
+async function saveInteraction(options?: { redirectOnError?: boolean }) {
+  await keskusFetch(`/api/events/${eventId.value}/interact`, { method: 'POST', body: {}, ...options });
 }
 
-await Promise.all([getEvent(), fetchComments(), saveInteraction()]).catch((err) => {
-  console.error('UNCAUGHT', err);
-});
+try {
+  await Promise.all([getEvent({ redirectOnError: false }), fetchComments({ redirectOnError: false }), saveInteraction({ redirectOnError: false })]);
+} catch (err: any) {
+  console.error(err);
+  // useToastError(err);
+  useRouter().push(Routes.MAIN);
+}
+
+async function commentAdded() {
+  await Promise.all([fetchComments(), saveInteraction()]);
+}
 </script>
