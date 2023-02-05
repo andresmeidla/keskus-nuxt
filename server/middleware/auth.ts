@@ -10,6 +10,7 @@ const NO_AUTH_ROUTE_REGEXES = [
 ];
 
 export default defineEventHandler((event) => {
+  console.log('REQ: ', event.node.req.url, event.node.req.headers);
   const parsedUrl = new URL(event.node.req.url ?? '/', useRuntimeConfig().webAddress);
   const pathname = parsedUrl.pathname;
   if (pathname.startsWith('/login')) {
