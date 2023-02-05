@@ -14,15 +14,19 @@ export default defineEventHandler((event) => {
   const parsedUrl = new URL(event.node.req.url ?? '/', useRuntimeConfig().webAddress);
   const pathname = parsedUrl.pathname;
   if (pathname.startsWith('/login')) {
+    console.log('allow /login');
     return;
   }
   if (pathname.startsWith('login')) {
+    console.log('allow login');
     return;
   }
   if (event.node.req.url?.startsWith('/login')) {
+    console.log('allow url /login');
     return;
   }
   if (event.node.req.url?.startsWith('login')) {
+    console.log('allow url login');
     return;
   }
   /* if (!pathname.startsWith('/api')) {
@@ -37,6 +41,7 @@ export default defineEventHandler((event) => {
     return false;
   });
   if (allowedRoute) {
+    console.log('allow route', allowedRoute, 'for', pathname);
     return;
   }
   const authCookie = getCookie(event, 'keskusToken');
@@ -45,6 +50,7 @@ export default defineEventHandler((event) => {
       const decoded = jwt.verify(authCookie, useRuntimeConfig().jwtSecret);
       if (decoded) {
         event.context.auth = decoded;
+        console.log('AUTHED', decoded);
         return;
       }
     } catch (e) {
@@ -52,9 +58,11 @@ export default defineEventHandler((event) => {
     }
   }
   if (pathname.startsWith('/api')) {
+    console.log('throwing 401 error');
     throw createError({ statusCode: 401, message: 'Unauthorized' });
   }
   deleteCookie(event, 'keskusToken');
   // redirecting
+  console.log('redirecting to login', pathname, event.node.req.url || 'none');
   return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || 'none' })}`);
 });
