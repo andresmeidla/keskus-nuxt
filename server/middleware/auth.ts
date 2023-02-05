@@ -53,6 +53,7 @@ export default defineEventHandler((event) => {
   if (pathname.startsWith('/api')) {
     throw createError({ statusCode: 401, message: 'Unauthorized' });
   }
+  deleteCookie(event, 'keskusToken');
   // redirecting
   return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || 'none' })}`);
 });
