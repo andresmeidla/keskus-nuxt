@@ -64,5 +64,5 @@ export default defineEventHandler((event) => {
   deleteCookie(event, 'keskusToken');
   // redirecting
   console.log('redirecting to login', pathname, event.node.req.url || 'none');
-  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || 'none' })}`);
+  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || 'none' })}`, 307);
 });
