@@ -55,5 +55,6 @@ export default defineEventHandler((event) => {
   }
   deleteCookie(event, 'keskusToken');
   // redirecting
-  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || 'none' })}`, 307);
+  // return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || 'none' })}`, 307);
+  throw createError({ statusCode: 401, message: 'Unauthorized' });
 });
