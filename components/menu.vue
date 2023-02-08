@@ -43,7 +43,7 @@ const menuItems = [
       useAuthCookie().value = '';
       store.setUserId(undefined);
       store.setUser(null);
-      useRouter().push(Routes.LOGIN);
+      useRouter().push({ path: Routes.LOGIN, query: { from: 'menu' } });
     },
   },
 ];

@@ -35,7 +35,7 @@ async function login() {
     // eslint-disable-next-line no-console
     console.info('Successfully logged in.');
     if (useRoute().query.initial) {
-      return router.push(String(useRoute().query.initial));
+      return router.push({ path: String(useRoute().query.initial), query: { from: 'login' } });
     }
     router.push(Routes.MAIN);
 

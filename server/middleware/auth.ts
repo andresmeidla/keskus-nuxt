@@ -34,5 +34,5 @@ export default defineEventHandler((event) => {
     throw createError({ statusCode: 401, message: 'Unauthorized' });
   }
   // redirecting
-  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname })}`, 307);
+  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, from: 'auth-middleware' })}`, 307);
 });

@@ -61,7 +61,7 @@ try {
 } catch (err: any) {
   console.error(err);
   // useToastError(err);
-  useRouter().push(Routes.MAIN);
+  useRouter().push({ path: Routes.MAIN, query: { from: 'main', err: err.message } });
 }
 
 async function commentAdded() {
