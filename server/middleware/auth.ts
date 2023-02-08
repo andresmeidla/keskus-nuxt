@@ -13,6 +13,7 @@ export default defineEventHandler((event) => {
   const pathname = parsedUrl.pathname;
   const allowedRoute = NO_AUTH_ROUTE_REGEXES.find((r) => new RegExp(r).test(pathname));
   if (allowedRoute) {
+    console.log('Allow', pathname);
     // no auth needed
     return;
   }
@@ -21,6 +22,7 @@ export default defineEventHandler((event) => {
     try {
       const decoded = jwt.verify(authCookie, useRuntimeConfig().jwtSecret);
       if (decoded) {
+        console.log('Auth Success', pathname);
         event.context.auth = decoded;
         return;
       }
@@ -31,8 +33,10 @@ export default defineEventHandler((event) => {
   }
   // send 401 for api requests
   if (pathname.startsWith('/api')) {
+    console.log('Throw 401', pathname);
     throw createError({ statusCode: 401, message: 'Unauthorized' });
   }
+  console.log('Redirect to login', pathname);
   // redirecting
   return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, from: 'auth-middleware' })}`, 307);
 });
