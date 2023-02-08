@@ -11,7 +11,7 @@
 import { store } from '~~/store';
 
 try {
-  await store.initAuth();
+  // await store.initAuth();
 } catch (err: any) {
   // useToastError(err);
 }

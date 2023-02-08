@@ -17,7 +17,7 @@ const username = ref('');
 const password = ref('');
 
 async function login() {
-  try {
+  /* try {
     const rsp = await keskusFetch('/api/login', {
       method: 'POST',
       body: JSON.stringify({
@@ -42,6 +42,6 @@ async function login() {
     // useRouter().push('/');
   } catch (err: any) {
     useToastError(err);
-  }
+  } */
 }
 </script>
