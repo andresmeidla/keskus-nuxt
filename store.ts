@@ -44,14 +44,18 @@ export const store = reactive({
       console.log(err);
       // useToastError(err);
     }
-    if (useRoute().path.startsWith('/login')) {
+
+    // only redirect in the client, because the path with SSR is not correct on the first request at least
+    if (process.client) {
+      if (useRoute().path.startsWith('/login')) {
+        // eslint-disable-next-line no-console
+        console.log('on login page, skipping redirect');
+        return;
+      }
       // eslint-disable-next-line no-console
-      console.log('on login page, skipping redirect');
-      return;
+      console.log('Failed to log in:', 'userId', this.userId, 'user', this.user);
+      useRouter().push({ path: '/login', query: { initial: useRoute().path, from: 'initAuth' } });
     }
-    // eslint-disable-next-line no-console
-    console.log('Failed to log in:', 'userId', this.userId, 'user', this.user);
-    useRouter().push({ path: '/login', query: { initial: useRoute().path, from: 'initAuth' } });
   },
   setLoading(loading: boolean) {
     this.loading.value = loading;
