@@ -2,8 +2,7 @@
   <div id="keskus">
     <NuxtLayout>
       <LoadingIndicator />
-      Hello KEskus
-      <!-- <NuxtPage /> -->
+      <NuxtPage />
     </NuxtLayout>
   </div>
 </template>
