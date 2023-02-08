@@ -61,7 +61,9 @@ try {
 } catch (err: any) {
   console.error(err);
   // useToastError(err);
-  useRouter().push({ path: Routes.MAIN, query: { from: 'main', err: err.message } });
+  if (process.client) {
+    useRouter().push({ path: Routes.MAIN, query: { from: 'main', err: err.message } });
+  }
 }
 
 async function commentAdded() {

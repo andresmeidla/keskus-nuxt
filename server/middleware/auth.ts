@@ -31,6 +31,10 @@ export default defineEventHandler((event) => {
     // no auth needed
     return;
   }
+  if (pathname.startsWith('/api')) {
+    console.log('API Unauthorized', pathname);
+    throw createError({ statusCode: 401, message: 'Unauthorized' });
+  }
   console.log('Redirect to login', event.node.req.url);
   // redirecting
   return sendRedirect(event, '/login', 307);
