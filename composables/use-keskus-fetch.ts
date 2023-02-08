@@ -36,12 +36,12 @@ export function useKeskusFetch<
       if (options?.redirectOnError !== false) {
         if (e instanceof FetchError && e.statusCode === 401) {
           // redirect to login
-          if (useRoute().path !== Routes.LOGIN) {
+          if (process.client && useRoute().path !== Routes.LOGIN) {
             useRouter().push({ path: Routes.LOGIN, query: { initial: useRoute().path, from: 'fetch', err: 401 } });
           }
         } else if (e instanceof FetchError && e.statusCode === 400) {
           // bad request
-          if (useRoute().path !== Routes.MAIN) {
+          if (process.client && useRoute().path !== Routes.MAIN) {
             useRouter().push({ path: Routes.MAIN, query: { err: 400 } });
           }
         }
