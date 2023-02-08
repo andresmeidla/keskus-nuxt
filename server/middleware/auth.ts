@@ -37,5 +37,5 @@ export default defineEventHandler((event) => {
   }
   console.log('Redirect to login', event.node.req.url);
   // redirecting
-  return sendRedirect(event, '/login', 307);
+  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || 'none' })}`, 307);
 });
