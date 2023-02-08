@@ -7,8 +7,8 @@ export default defineEventHandler((event) => {
     'Access-Control-Expose-Headers': '*',
   });
   if (getMethod(event) === 'OPTIONS') {
-    event.res.statusCode = 204;
-    event.res.statusMessage = 'No Content.';
+    event.node.res.statusCode = 204;
+    event.node.res.statusMessage = 'No Content.';
     return 'OK';
   }
 });

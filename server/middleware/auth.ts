@@ -1,26 +1,12 @@
 import jwt from 'jsonwebtoken';
 
-const NO_AUTH_ROUTE_REGEXES = [
-  // allow /login with query parameters
-  /\/login.*/g,
-  /\/api\/login.*/g,
-  /\/_ipx\/.*/g,
-  /\/__nuxt_error\?.*/g,
-];
-
 export default defineEventHandler((event) => {
-  const parsedUrl = new URL(event.node.req.url ?? '/', useRuntimeConfig().webAddress);
+  const parsedUrl = new URL(event.node.req.url ?? '/', useRuntimeConfig().webAddress || 'http://localhost');
   const pathname = parsedUrl.pathname;
-  const allowedRoute = NO_AUTH_ROUTE_REGEXES.find((r) => new RegExp(r).test(pathname));
-  if (allowedRoute) {
-    console.log('Allow', pathname);
-    // no auth needed
-    return;
-  }
   const authCookie = getCookie(event, 'keskusToken');
   if (authCookie) {
     try {
-      const decoded = jwt.verify(authCookie, useRuntimeConfig().jwtSecret);
+      const decoded = jwt.verify(authCookie, useRuntimeConfig().jwtSecret || '#1241250+u9123i3fghu9');
       if (decoded) {
         console.log('Auth Success', pathname);
         event.context.auth = decoded;
@@ -30,13 +16,13 @@ export default defineEventHandler((event) => {
       console.warn('While verifying token:', e);
       deleteCookie(event, 'keskusToken');
     }
+    return;
   }
-  // send 401 for api requests
-  if (pathname.startsWith('/api')) {
-    console.log('Throw 401', pathname);
-    throw createError({ statusCode: 401, message: 'Unauthorized' });
+  if (pathname.startsWith('/login')) {
+    console.log('allow', pathname);
+    return;
   }
-  console.log('Redirect to login', pathname);
+  console.log('Redirect to login', event.node.req.url);
   // redirecting
-  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, from: 'auth-middleware' })}`, 307);
+  return sendRedirect(event, '/login', 307);
 });
