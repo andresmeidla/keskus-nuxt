@@ -10,7 +10,7 @@ const NO_AUTH_ROUTE_REGEXES = [
 
 export default defineEventHandler((event) => {
   const parsedUrl = new URL(event.node.req.url ?? '/', useRuntimeConfig().webAddress || 'http://localhost');
-  const pathname = parsedUrl.pathname;
+  const pathname = parsedUrl.pathname; // parse the query string out
   const authCookie = getCookie(event, 'keskusToken');
   if (authCookie) {
     try {

@@ -1,4 +1,4 @@
-import type { NitroFetchRequest } from 'nitropack';
+import type { AvailableRouterMethod, NitroFetchRequest } from 'nitropack';
 import type { Ref } from 'nuxt/dist/app/compat/capi';
 import type { AsyncData, KeyOfRes, PickFrom } from 'nuxt/dist/app/composables/asyncData';
 import { FetchError } from 'ofetch';
@@ -12,7 +12,8 @@ export function useKeskusFetch<
   ResT = void,
   ErrorT = FetchError,
   ReqT extends NitroFetchRequest = NitroFetchRequest,
-  _ResT = ResT extends void ? FetchResult<ReqT> : ResT,
+  Method extends AvailableRouterMethod<ReqT> = 'get' extends AvailableRouterMethod<ReqT> ? 'get' : AvailableRouterMethod<ReqT>,
+  _ResT = ResT extends void ? FetchResult<ReqT, Method> : ResT,
   Transform extends (res: _ResT) => any = (res: _ResT) => _ResT,
   PickKeys extends KeyOfRes<Transform> = KeyOfRes<Transform>
 >(

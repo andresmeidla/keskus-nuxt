@@ -20,7 +20,7 @@
               :key="user.id"
               :user="user"
               size="sm"
-              :tooltip="userDisplayName(user)"
+              :tooltip="userName(user)"
               :show-name="false"
               class="border-2 border-white"
             />
@@ -84,6 +84,8 @@ const additionalUserNames = computed(() => {
     .map((u) => userDisplayName(u))
     .join(', ');
 });
+
+const userName = (user: UserRetType) => userDisplayName(user);
 
 const newCommentCount = computed(() => {
   if (props.event.comments.length === 0) {

@@ -45,7 +45,7 @@ const eventData = reactive({ headline: '', location: '', body: '' });
 const modalClose = ref<HTMLButtonElement | null>(null);
 const showErrors = ref(false);
 
-const headlineValid = computed(() => eventData.headline.length >= 1);
+const headlineValid = computed(() => eventData.headline.length >= 3);
 
 const purifiedBody = computed(() => purifyHtml(eventData.body));
 // const purgedBody = computed(() => purgeHtml(eventData.body));

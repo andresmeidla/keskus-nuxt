@@ -19,7 +19,7 @@ const password = ref('');
 async function login() {
   try {
     const rsp = await keskusFetch('/api/login', {
-      method: 'POST',
+      method: 'post',
       body: JSON.stringify({
         username: username.value,
         password: password.value,

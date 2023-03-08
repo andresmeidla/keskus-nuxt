@@ -28,7 +28,7 @@ const eventId = computed(() => {
 const event = ref<EndpointEvent>();
 
 async function getEvent(options?: { redirectOnError?: boolean }) {
-  const rsp = await useKeskusFetch<EndpointEvent>(`/api/events/${eventId.value}`, { method: 'get', ...options });
+  const rsp = await useKeskusFetch(`/api/events/${eventId.value}`, { ...options });
   if (rsp.data.value) {
     event.value = rsp.data.value;
   }
@@ -49,7 +49,7 @@ async function fetchComments(options?: { redirectOnError?: boolean }) {
 }
 
 async function saveInteraction(options?: { redirectOnError?: boolean }) {
-  await keskusFetch(`/api/events/${eventId.value}/interact`, { method: 'POST', body: {}, ...options });
+  await keskusFetch(`/api/events/${eventId.value}/interact`, { method: 'post', body: {}, redirectOnError: options?.redirectOnError });
 }
 
 try {

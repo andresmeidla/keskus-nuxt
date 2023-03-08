@@ -25,8 +25,7 @@ const eventData = ref<EndpointEvents>({
 
 async function fetchEventList() {
   try {
-    const rsp = await useKeskusFetch<EndpointEvents>('/api/events', {
-      method: 'GET',
+    const rsp = await useKeskusFetch('/api/events', {
       query: { page: page.value, perPage: perPage.value },
       redirectOnError: false,
     });

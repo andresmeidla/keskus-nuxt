@@ -2,7 +2,7 @@
 import DOMPurify, { Config } from 'isomorphic-dompurify';
 import { format, formatDistanceToNow, setDefaultOptions } from 'date-fns';
 
-import et from 'date-fns/locale/et/index';
+import et from 'date-fns/locale/et/index.js';
 
 setDefaultOptions({ locale: et });
 

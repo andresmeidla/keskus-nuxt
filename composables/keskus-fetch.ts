@@ -6,7 +6,7 @@ import { store } from '~~/store';
 
 type FetchOptions<T extends NitroFetchRequest, Opts extends NitroFetchOptions<T> = NitroFetchOptions<T>> = { redirectOnError?: boolean } & Opts;
 
-export async function keskusFetch<T extends NitroFetchRequest, Opts extends NitroFetchOptions<T> = NitroFetchOptions<T>>(url: T, options?: FetchOptions<T>) {
+export async function keskusFetch<R extends NitroFetchRequest = NitroFetchRequest, O extends FetchOptions<R> = FetchOptions<R>>(url: R, options?: O) {
   try {
     store.setLoading(true);
     const cookieHeaders = useRequestHeaders(['cookie']);
@@ -19,7 +19,7 @@ export async function keskusFetch<T extends NitroFetchRequest, Opts extends Nitr
         }
       },
       retry: false,
-    } as Opts);
+    } as O);
     return rsp;
   } catch (e: any) {
     console.error('keskusFetch error', e);
