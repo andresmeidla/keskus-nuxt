@@ -99,7 +99,7 @@ export default defineEventHandler(async (event) => {
     event,
     z.object({
       headline: z.string().min(3).max(500),
-      body: z.string().min(1).max(10000),
+      body: z.string().min(1).max(1000000),
       location: z.string().min(1).max(500).optional(),
     })
   );
