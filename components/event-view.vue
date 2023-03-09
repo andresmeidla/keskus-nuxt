@@ -1,7 +1,7 @@
 <template>
   <div class="flex w-full flex-col gap-4">
-    <div class="relative flex w-full flex-col items-center justify-center sm:flex-row">
-      <div class="flex h-full w-52 flex-col items-center justify-start gap-2 p-2 pt-6">
+    <div class="relative flex w-full flex-col items-center md:flex-row">
+      <div class="flex w-52 flex-col items-center justify-start gap-2 p-2 pt-6 md:h-full">
         <Avatar :user="event.user" :date="new Date(event.createdAt)" size="xl"></Avatar>
       </div>
       <div class="flex h-full w-full flex-col items-center justify-start gap-1 truncate pt-6">
@@ -48,7 +48,7 @@
           </div>
         </template>
       </div>
-      <div class="flex w-32 flex-row justify-center gap-2 sm:items-end sm:px-5">
+      <div class="flex w-32 flex-row items-end justify-center gap-2 sm:px-5 md:h-full md:items-start md:pt-6">
         <template v-if="isUserOwner">
           <div class="">
             <span class="btn btn-sm btn-circle btn-secondary" @click="edit = !edit">
