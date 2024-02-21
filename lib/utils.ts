@@ -1,8 +1,7 @@
-// eslint-disable-next-line import/named, simple-import-sort/imports
-import DOMPurify, { Config } from 'isomorphic-dompurify';
+import DOMPurify, { type Config } from 'isomorphic-dompurify';
 import { format, formatDistanceToNow, setDefaultOptions } from 'date-fns';
 
-import et from 'date-fns/locale/et/index.js';
+import { et } from 'date-fns/locale';
 
 setDefaultOptions({ locale: et });
 
@@ -27,11 +26,12 @@ export function dateFormatted(date: Date) {
   return format(new Date(date), 'yyyy-MM-dd HH:mm');
 }
 
-export function parseJwt(token: string) {
-  const base64Url = token.split('.')[1];
+export function parseJwt<T = unknown>(token: string) {
+  const splitStrings = (token || '').split('.');
+  const base64Url = (splitStrings.length > 0 ? splitStrings[1] : '') ?? '';
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
   const jsonPayload = decodeURIComponent(decodeBase64(base64));
-  return JSON.parse(jsonPayload);
+  return JSON.parse(jsonPayload) as T;
 }
 
 export function encodeBase64(value: string): string {

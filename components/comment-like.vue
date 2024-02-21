@@ -27,9 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
-
-import { store } from '~~/store';
+import type { UnwrapRef } from 'vue';
 
 type EndpointComment = NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/comments/`>>>>[number];
 type EndpointCommentLike = EndpointComment['commentLikes'][number];
@@ -52,6 +50,7 @@ const props = defineProps({
     default: 'md',
   },
 });
+const { user, userId } = useAuth();
 
 const localCommentLikes = computed({
   get: () => props.commentLikes,
@@ -59,7 +58,7 @@ const localCommentLikes = computed({
 });
 
 const userLike = computed(() => {
-  return localCommentLikes.value.find((l) => l.userId === store.userId);
+  return localCommentLikes.value.find((l) => l.userId === userId.value);
 });
 
 const likeUsers = computed(() => {
@@ -67,25 +66,26 @@ const likeUsers = computed(() => {
 });
 
 async function like() {
+  if (!userId) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
+  }
   if (userLike.value) {
-    const likeIndex = localCommentLikes.value.findIndex((l) => l.userId === store.userId);
+    const likeIndex = localCommentLikes.value.findIndex((l) => l.userId === userId.value);
     if (likeIndex !== -1) {
-      localCommentLikes.value.splice(likeIndex, 1); // = localCommentLikes.value.filter((l) => l.userId !== store.userId);
+      localCommentLikes.value.splice(likeIndex, 1);
     }
   } else {
     // add a custom like object to the array
     // or remove it if it already exists
     // so that the UI updates immediately, then make a request to the server
     localCommentLikes.value.push({
-      id: 0,
-      userId: store.userId,
-      user: store.user,
-      eventId: props.eventId,
+      userId: userId.value as number,
+      user: user.value as UnwrapRef<typeof localCommentLikes>[number]['user'],
       commentId: props.commentId,
       dislike: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    } as EndpointCommentLike);
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
   }
   await keskusFetch(`/api/events/${props.eventId}/comments/${props.commentId}/like`, { method: 'POST', body: {} });
   // localCommentLikes.value = await keskusFetch(`/api/events/${props.eventId}/comments/${props.commentId}/likes`);

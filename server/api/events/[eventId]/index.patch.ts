@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
     event,
     z.object({
       eventId: z.coerce.number(),
-    })
+    }),
   );
   const body = await zh.useValidatedBody(
     event,
@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
       headline: z.string().min(3),
       body: z.string().min(1),
       location: z.string().min(1).optional().nullable(),
-    })
+    }),
   );
   const userId = event.context.auth.id as number;
   const exists = await prisma.event.findFirst({

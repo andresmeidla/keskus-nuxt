@@ -24,17 +24,12 @@ const eventData = ref<EndpointEvents>({
 });
 
 async function fetchEventList() {
-  try {
-    const rsp = await useKeskusFetch('/api/events', {
-      query: { page: page.value, perPage: perPage.value },
-      redirectOnError: false,
-    });
-    if (rsp.data.value) {
-      eventData.value.count = rsp.data.value.count;
-      eventData.value.events = rsp.data.value.events;
-    }
-  } catch (err: any) {
-    // useToastError(err);
+  const rsp = await useKeskusFetch('/api/events', {
+    query: { page: page.value, perPage: perPage.value },
+  });
+  if (rsp.data.value) {
+    eventData.value.count = rsp.data.value.count;
+    eventData.value.events = rsp.data.value.events;
   }
 }
 
@@ -45,6 +40,6 @@ watch(
   async () => {
     useRouter().push({ query: { page: page.value } });
     await fetchEventList();
-  }
+  },
 );
 </script>

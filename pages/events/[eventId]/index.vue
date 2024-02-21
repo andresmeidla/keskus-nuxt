@@ -1,72 +1,46 @@
 <template>
   <div class="flex w-full justify-center py-4 text-black">
     <div class="flex w-full flex-col gap-2 rounded-lg bg-gray-100 sm:w-4/5">
-      <EventView v-if="event" :event="event" />
-      <div class="divider my-0 mx-8"></div>
+      <EventView v-if="event" :event="eventObj" />
       <div class="w-full">
         <CommentAdd v-if="eventId" :event-id="eventId" @comment-added="commentAdded"></CommentAdd>
       </div>
       <div class="w-full">
-        <CommentList v-if="eventId" :event-id="eventId" :comments="comments"></CommentList>
+        <CommentList v-if="eventId && comments" :event-id="eventId" :comments="comments"></CommentList>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Routes } from '~~/lib/routes';
+definePageMeta({
+  validate: (route) => {
+    if (Array.isArray(route.params.eventId)) {
+      return false;
+    }
+    if (!/^\d+$/.test(route.params.eventId)) {
+      return false;
+    }
+    return !isNaN(parseInt(route.params.eventId, 10));
+  },
+});
+const interact = () => keskusFetch(`/api/events/${eventId.value}/interact`, { method: 'post', body: {} });
+const eventId = computed(() => parseInt(useRoute().params.eventId as string));
 
-type EndpointEvent = Awaited<ReturnType<typeof keskusFetch<'/api/events/:stringId'>>>;
-type EndpointComment = NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/comments/`>>>>[number];
+const { data: event, error: eventError } = await useKeskusFetch(`/api/events/${eventId.value}`);
+const { data: comments, refresh: refreshComments } = await useKeskusFetch(`/api/events/${eventId.value}/comments`);
+interact();
 
-const eventId = computed(() => {
-  const str = useRoute().params.eventId;
-  const parsed = Number.parseInt(str.toString());
-  return isNaN(parsed) ? undefined : parsed;
+const eventObj = computed<any>(() => {
+  if (event.value) {
+    return event.value;
+  }
+  return null;
 });
 
-const event = ref<EndpointEvent>();
-
-async function getEvent(options?: { redirectOnError?: boolean }) {
-  const rsp = await useKeskusFetch(`/api/events/${eventId.value}`, { ...options });
-  if (rsp.data.value) {
-    event.value = rsp.data.value;
-  }
-  if (rsp.error.value) {
-    throw rsp.error.value;
-  }
-}
-
-const comments = ref<EndpointComment[]>([]);
-async function fetchComments(options?: { redirectOnError?: boolean }) {
-  const rsp = await useKeskusFetch<EndpointComment[]>(`/api/events/${eventId.value}/comments`, { ...options });
-  if (rsp.data.value) {
-    comments.value = rsp.data.value;
-  }
-  if (rsp.error.value) {
-    throw rsp.error.value;
-  }
-}
-
-async function saveInteraction(options?: { redirectOnError?: boolean }) {
-  await keskusFetch(`/api/events/${eventId.value}/interact`, { method: 'post', body: {}, redirectOnError: options?.redirectOnError });
-}
-
-try {
-  await Promise.all([
-    getEvent({ redirectOnError: false }), //
-    fetchComments({ redirectOnError: false }),
-    saveInteraction({ redirectOnError: false }),
-  ]);
-} catch (err: any) {
-  console.error(err);
-  // useToastError(err);
-  if (process.client) {
-    useRouter().push({ path: Routes.MAIN, query: { from: 'main', err: err.message } });
-  }
-}
+useErrorHandling(eventError.value);
 
 async function commentAdded() {
-  await Promise.all([fetchComments(), saveInteraction()]);
+  await Promise.all([refreshComments(), interact()]);
 }
 </script>

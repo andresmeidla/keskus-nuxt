@@ -17,9 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
-
-type EndpointComment = NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/comments/`>>>>[number];
+type EndpointComment = Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/comments/`>>>[number];
 
 defineProps({
   eventId: {

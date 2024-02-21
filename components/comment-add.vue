@@ -1,13 +1,9 @@
 <template>
-  <div class="flex w-full flex-col items-center justify-center gap-2 p-2 pb-4">
+  <div class="add-comment flex w-full flex-col items-center justify-center gap-2 p-2 pb-2 bg-gray-200">
     <div
-      class="badge flex cursor-pointer select-none items-center justify-center gap-1 p-3 duration-75 hover:drop-shadow-lg hover:saturate-50 hover:transition-all"
+      class="badge flex cursor-pointer select-none items-center justify-center gap-1 p-4 duration-75 hover:drop-shadow-lg hover:saturate-50 hover:transition-all"
       :class="{ 'badge-secondary': isExpanded, 'badge-primary': !isExpanded }"
-      @click="
-        () => {
-          isExpanded = !isExpanded;
-        }
-      "
+      @click="toggleExpansion"
     >
       <div class="flex flex-row items-center justify-center gap-1"><Icon class="h-5 w-5" name="material-symbols:add-circle-rounded" /> Lisa kommentaar</div>
     </div>
@@ -15,10 +11,10 @@
       <div class="flex w-full flex-col items-center justify-center gap-2">
         <div class="flex w-full flex-row">
           <div class="hidden w-52 items-center justify-center sm:flex">
-            <Avatar v-if="store.user" :user="store.user" />
+            <Avatar v-if="user" :user="user" />
           </div>
-          <ClientOnly>
-            <Editor v-if="isExpanded" :key="editorUpdateKey" v-model="newComment" override-tab-index="1" focus></Editor>
+          <ClientOnly fallback-tag="div" fallback="Loading editor...">
+            <Editor :key="editorUpdateKey" v-model="newComment" override-tab-index="4" :focus="!isMobile" :validation-error="showErrors && !bodyValid"></Editor>
           </ClientOnly>
           <div class="hidden w-32 sm:flex"></div>
         </div>
@@ -29,29 +25,29 @@
 </template>
 
 <script setup lang="ts">
-import { purifyHtml } from '~~/lib/utils';
-
-import { store } from '../store';
+import { purgeHtml, purifyHtml } from '@/lib/utils';
 
 const props = defineProps({
   eventId: { type: Number, required: true },
 });
+const { user } = useAuth();
 const emit = defineEmits(['commentAdded']);
 const isExpanded = ref(false);
 const loading = ref(false);
 const newComment = ref('');
-// const showErrors = ref(false);
+const showErrors = ref(false);
+const { isMobile } = useDevice();
 let editorUpdateKey = 0;
 
 const purifiedBody = computed(() => purifyHtml(newComment.value));
-// const purgedBody = computed(() => purgeHtml(purifiedBody.value));
-// const bodyValid = computed(() => purgedBody.value.length >= 3);
+const purgedBody = computed(() => purgeHtml(purifiedBody.value));
+const bodyValid = computed(() => purgedBody.value.length >= 1);
 
 async function addComment() {
-  // if (!bodyValid.value) {
-  //   showErrors.value = true;
-  //   return;
-  // }
+  if (!bodyValid.value) {
+    showErrors.value = true;
+    return;
+  }
   try {
     loading.value = true;
     await keskusFetch(`/api/events/${props.eventId}/comments`, { method: 'POST', body: { body: purifiedBody.value } });
@@ -64,6 +60,18 @@ async function addComment() {
     useToastError(err);
   } finally {
     loading.value = false;
+  }
+}
+
+function toggleExpansion() {
+  isExpanded.value = !isExpanded.value;
+  if (isExpanded.value) {
+    setTimeout(() => {
+      const editor = document.querySelector('.add-comment .ql-editor');
+      if (editor) {
+        (editor as HTMLElement).focus();
+      }
+    }, 100);
   }
 }
 </script>

@@ -2,7 +2,7 @@
   <div class="attendance flex w-full flex-col text-center sm:flex-row">
     <div v-for="(label, state) of attendanceLabels" :key="state" class="flex w-full flex-col items-center justify-start gap-4">
       <span
-        class="badge text-md flex w-fit cursor-pointer select-none flex-row gap-1 p-3 duration-75 hover:drop-shadow-lg hover:saturate-50 hover:transition-all"
+        class="badge text-md flex w-fit cursor-pointer select-none flex-row gap-1 p-4 duration-75 hover:drop-shadow-lg hover:saturate-50 hover:transition-all"
         :class="{
           // 'badge-success': attendanceStyle[state] === 'success',
           'badge-secondary': attendanceStyle[state] === 'secondary',
@@ -14,7 +14,7 @@
         {{ label }}
       </span>
       <div class="flex flex-wrap gap-2">
-        <div v-for="att of attendanceMap[state]" :key="att.userId" :class="{ ['user-avatar']: att.userId === store.userId }">
+        <div v-for="att of attendanceMap[state]" :key="att.userId" :class="{ ['user-avatar']: att.userId === userId }">
           <Avatar :user="att.user"></Avatar>
         </div>
       </div>
@@ -23,13 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
+import { AttendanceState } from '~/server/lib/entity-types';
 
-import { store } from '~~/store';
-
-import { AttendanceState } from '../server/lib/entity-types';
-
-type EndpointEventAttendance = NonNullable<NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/`>>>>>['eventAttendances'][number];
+type EndpointEventAttendance = Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}`>>>['eventAttendances'][number];
 
 const attendanceStyle = {
   [AttendanceState.Going]: 'secondary',
@@ -54,20 +50,22 @@ const props = defineProps({
   },
 });
 
+const { userId, user } = useAuth();
+
 const localEventAttendees = computed({
   get: () => props.eventAttendances,
   set: () => {},
 });
 
 const userAttendance = computed(() => {
-  return localEventAttendees.value.find((att) => att.userId === store.userId);
+  return localEventAttendees.value.find((att) => att.userId === userId.value);
 });
 
 const attendanceMap = computed(() => {
   return localEventAttendees.value.reduce(
     (acc, cur) => {
       if (!acc[cur.state as AttendanceState]) {
-        console.error(`Invalid AttendanceState: "${cur.state}"`);
+        throw new Error(`Invalid AttendanceState: "${cur.state}"`);
       } else {
         acc[cur.state as AttendanceState].push(cur);
       }
@@ -77,7 +75,7 @@ const attendanceMap = computed(() => {
       [AttendanceState.Not]: [] as EndpointEventAttendance[],
       [AttendanceState.Maybe]: [] as EndpointEventAttendance[],
       [AttendanceState.Going]: [] as EndpointEventAttendance[],
-    }
+    },
   );
 });
 
@@ -87,21 +85,20 @@ async function setAttendance(state: AttendanceState) {
   // so that the UI updates immediately, then make a request to the server
   if (userAttendance.value) {
     if (userAttendance.value.state === state) {
-      const likeIndex = localEventAttendees.value.findIndex((ea) => ea.userId === store.userId);
+      const likeIndex = localEventAttendees.value.findIndex((ea) => ea.userId === userId.value);
       if (likeIndex !== -1) {
-        localEventAttendees.value.splice(likeIndex, 1); // = localCommentLikes.value.filter((l) => l.userId !== store.userId);
+        localEventAttendees.value.splice(likeIndex, 1);
       }
     } else {
       userAttendance.value.state = state;
     }
   } else {
     localEventAttendees.value.push({
-      id: 0,
-      userId: store.userId,
-      user: store.user,
+      userId: userId.value,
+      user: user.value,
       eventId: props.eventId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       state,
     } as EndpointEventAttendance);
   }

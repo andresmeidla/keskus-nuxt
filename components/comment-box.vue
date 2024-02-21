@@ -9,7 +9,9 @@
     </template>
     <template v-else>
       <div class="flex w-full flex-col justify-center gap-2 px-2">
-        <Editor v-model="body"></Editor>
+        <ClientOnly fallback-tag="div" fallback="Loading editor...">
+          <Editor v-model="body" :focus="!isMobile" :validation-error="showErrors && !bodyValid"></Editor>
+        </ClientOnly>
         <div class="flex justify-center">
           <button class="btn btn-primary" :disabled="saving" @click="updateComment">Muuda</button>
         </div>
@@ -17,8 +19,8 @@
     </template>
     <div class="w-16 items-center gap-2 px-2 sm:flex sm:w-32 sm:flex-row sm:justify-end sm:pr-5">
       <div v-if="isUserOwner" class="">
-        <span class="btn btn-sm btn-circle btn-secondary">
-          <Icon class="h-5 w-5 cursor-pointer" :name="edit ? 'tabler:edit-off' : 'tabler:edit'" @click="edit = !edit" />
+        <span class="btn btn-sm btn-circle btn-secondary" @click="edit = !edit">
+          <Icon class="h-5 w-5 cursor-pointer" :name="edit ? 'tabler:edit-off' : 'tabler:edit'" />
         </span>
       </div>
       <CommentLike :event-id="comment.eventId" :comment-id="comment.id" :comment-likes="comment.commentLikes" @updated="emit('updated')"></CommentLike>
@@ -27,11 +29,9 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
+import { purgeHtml, purifyHtml } from '~/lib/utils';
 
-import { purifyHtml } from '~~/lib/utils';
-
-type EndpointComment = NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/comments/`>>>>[number];
+type EndpointComment = Awaited<ReturnType<typeof keskusFetch<'/api/events/:eventId/comments'>>>[number];
 
 const props = defineProps({
   comment: {
@@ -39,11 +39,13 @@ const props = defineProps({
     required: true,
   },
 });
+const { userId } = useAuth();
+const { isMobile } = useDevice();
 const emit = defineEmits(['updated']);
 
 const edit = ref(false);
 const saving = ref(false);
-// const showErrors = ref(false);
+const showErrors = ref(false);
 
 const editableComment = computed({
   get: () => props.comment,
@@ -60,16 +62,16 @@ const body = computed({
   },
 });
 
-const isUserOwner = computed(() => props.comment.userId === getUser());
+const isUserOwner = computed(() => props.comment.userId === userId.value);
 const purifiedBody = computed(() => purifyHtml(body.value));
-// const purgedBody = computed(() => purgeHtml(purifiedBody.value || ''));
-// const bodyValid = computed(() => purgedBody.value.length >= 3);
+const purgedBody = computed(() => purgeHtml(purifiedBody.value || ''));
+const bodyValid = computed(() => purgedBody.value.length >= 1);
 
 async function updateComment() {
-  // if (!bodyValid.value) {
-  //   showErrors.value = true;
-  //   return;
-  // }
+  if (!bodyValid.value) {
+    showErrors.value = true;
+    return;
+  }
   try {
     saving.value = true;
     await keskusFetch(`/api/events/${props.comment.eventId}/comments/${props.comment.id}`, {

@@ -20,8 +20,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import { PropType } from 'vue';
-
 type EndpointEvents = Awaited<ReturnType<typeof keskusFetch<'/api/events'>>>;
 
 defineProps({

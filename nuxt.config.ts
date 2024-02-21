@@ -1,7 +1,7 @@
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
   css: ['toastify-js/src/toastify.css', '@/assets/css/main.css', 'floating-vue/dist/style.css', '@vueup/vue-quill/dist/vue-quill.snow.css'],
-  modules: ['@nuxt/image-edge', 'nuxt-icon', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode'],
+  modules: ['@nuxtjs/device', '@nuxt/image', 'nuxt-icon', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode'],
   runtimeConfig: {
     jwtSecret: '0h23tg9f7hwab19g72',
     webAddress: 'https://keskus.meidla.com',
@@ -19,10 +19,6 @@ export default defineNuxtConfig({
   nitro: {
     compressPublicAssets: true,
     minify: true,
-  },
-  typescript: {
-    shim: false,
-    strict: true,
   },
   colorMode: {
     preference: 'system', // default theme

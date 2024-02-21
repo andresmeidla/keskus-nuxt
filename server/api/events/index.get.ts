@@ -8,12 +8,12 @@ export type Pagination = {
 };
 
 export default defineEventHandler(async (event) => {
-  const query = zh.useValidatedQuery(
+  const query = await zh.useValidatedQuery(
     event,
     z.object({
       page: z.coerce.number().min(1).default(1),
       perPage: z.coerce.number().min(1).max(10).default(10),
-    })
+    }),
   );
 
   const userId = event.context.auth.id;

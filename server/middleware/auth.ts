@@ -47,6 +47,7 @@ export default defineEventHandler((event) => {
         return;
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.warn('While verifying token:', e);
     }
   }
@@ -55,5 +56,5 @@ export default defineEventHandler((event) => {
   }
   deleteCookie(event, 'keskusToken');
   // redirecting
-  return sendRedirect(event, `/login?${new URLSearchParams({ initial: pathname, fullUrl: event.node.req.url || 'none' })}`, 307);
+  return sendRedirect(event, `/login?${new URLSearchParams({ to: pathname, fullUrl: event.node.req.url || 'none' })}`, 307);
 });

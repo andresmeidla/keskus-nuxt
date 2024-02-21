@@ -1,8 +1,12 @@
 {
   "cSpell.words": [
+    "daisyui",
     "dompurify",
     "firstname",
     "keskus",
-    "ofetch"
+    "ofetch",
+    "stylelint",
+    "syncpack",
+    "tailwindcss"
   ]
 }

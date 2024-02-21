@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
     event,
     z.object({
       eventId: z.coerce.number(),
-    })
+    }),
   );
   const userId = event.context.auth.id as number;
   const like = await prisma.eventLike.findFirst({

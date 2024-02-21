@@ -56,10 +56,6 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
-
-import { store } from '~~/store';
-
 type EventsEndpointRetType = Awaited<ReturnType<typeof keskusFetch<'/api/events'>>>;
 type EventRetType = EventsEndpointRetType['events'][number];
 type CommentRetType = EventRetType['comments'][number];
@@ -72,8 +68,10 @@ const props = defineProps({
   },
 });
 
+const { userId } = useAuth();
+
 const userInteraction = computed(() => {
-  return props.event.eventInteractions.find((interaction) => interaction.userId === store.userId);
+  return props.event.eventInteractions.find((interaction) => interaction.userId === userId.value);
 });
 
 const shouldRenderAdditionalUsersIndicator = computed(() => commentUsers.value.length > 4);
@@ -101,11 +99,14 @@ const newCommentCount = computed(() => {
 
 const commentUsers = computed(() =>
   Object.values(
-    props.event.comments.reduce((acc, cur) => {
-      acc[cur.userId] = cur.user;
-      return acc;
-    }, {} as Record<number, UserRetType>)
-  )
+    props.event.comments.reduce(
+      (acc, cur) => {
+        acc[cur.userId] = cur.user;
+        return acc;
+      },
+      {} as Record<number, UserRetType>,
+    ),
+  ),
 );
 
 const commentUserNames = computed(() => commentUsers.value.map((u) => userDisplayName(u)).join(', ') || '');

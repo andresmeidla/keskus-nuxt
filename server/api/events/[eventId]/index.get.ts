@@ -1,6 +1,6 @@
 import { z, zh } from 'h3-zod';
 
-import { DefaultUserAttributes } from '~~/server/lib/entity-types';
+import { DefaultUserAttributes } from '~/server/lib/entity-types';
 
 export type Pagination = {
   page: number;
@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     event,
     z.object({
       eventId: z.coerce.number(),
-    })
+    }),
   );
   const userId = event.context.auth.id as number;
   const keskusEvent = await prisma.event.findUnique({
@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
     },
   });
   if (!keskusEvent) {
-    return createError({ statusCode: 404, message: 'Event not found' });
+    throw createError({ statusCode: 404, message: 'Event not found', statusMessage: 'Event not found', fatal: true });
   }
   return keskusEvent;
 });

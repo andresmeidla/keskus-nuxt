@@ -2,7 +2,7 @@
 import { computed, defineComponent, h, onBeforeUnmount, ref } from 'vue';
 
 import { useNuxtApp } from '#app';
-import { store } from '~~/store';
+import { store } from '~/store';
 
 export default defineComponent({
   name: 'LoadingIndicator',

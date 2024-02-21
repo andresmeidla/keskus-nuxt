@@ -4,7 +4,6 @@
     <div class="form-control flex w-full flex-col items-center justify-center gap-2 sm:px-10">
       <input
         v-model="eventData.headline"
-        v-focus
         tabindex="1"
         type="text"
         placeholder="Mis? *"
@@ -18,8 +17,14 @@
           :address="eventData.location"
         ></GmapLink>
       </div>
-      <ClientOnly>
-        <Editor :key="editorUpdateKey" v-model="eventData.body" placeholder="Kirjeldus? *" override-tab-index="3"></Editor>
+      <ClientOnly fallback-tag="div" fallback="Loading editor...">
+        <Editor
+          :key="editorUpdateKey"
+          v-model="eventData.body"
+          placeholder="Kirjeldus? *"
+          override-tab-index="3"
+          :validation-error="showErrors && !bodyValid"
+        ></Editor>
       </ClientOnly>
       <div class="modal-action flex w-full items-center justify-center">
         <button class="btn btn-primary" :disabled="loading" @click="saveEvent">Valmis!</button>
@@ -30,15 +35,14 @@
 </template>
 
 <script setup lang="ts">
-import { purifyHtml } from '~~/lib/utils';
-import { store } from '~~/store';
+import { purgeHtml, purifyHtml } from '~/lib/utils';
 
+const { user } = useAuth();
 const emit = defineEmits(['eventCreated']);
 
 let editorUpdateKey = 0;
 
 const loading = ref(false);
-const user = computed(() => store.user);
 
 const eventData = reactive({ headline: '', location: '', body: '' });
 
@@ -48,11 +52,11 @@ const showErrors = ref(false);
 const headlineValid = computed(() => eventData.headline.length >= 3);
 
 const purifiedBody = computed(() => purifyHtml(eventData.body));
-// const purgedBody = computed(() => purgeHtml(eventData.body));
-// const bodyValid = computed(() => purgedBody.value.length >= 3);
+const purgedBody = computed(() => purgeHtml(eventData.body));
+const bodyValid = computed(() => purgedBody.value.length >= 3);
 
 async function saveEvent() {
-  if (!headlineValid.value) {
+  if (!headlineValid.value || !bodyValid.value) {
     showErrors.value = true;
     return;
   }

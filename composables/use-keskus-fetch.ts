@@ -1,55 +1,30 @@
-import type { AvailableRouterMethod, NitroFetchRequest } from 'nitropack';
-import type { Ref } from 'nuxt/dist/app/compat/capi';
-import type { AsyncData, KeyOfRes, PickFrom } from 'nuxt/dist/app/composables/asyncData';
-import { FetchError } from 'ofetch';
+import type { UseFetchOptions } from '#app';
+import type { NitroFetchRequest, TypedInternalResponse, AvailableRouterMethod as _AvailableRouterMethod } from 'nitropack';
+import { store } from '~/store';
 
-import type { FetchResult, UseFetchOptions } from '#app';
-import { Routes } from '~~/lib/routes';
-import { store } from '~~/store';
+type AvailableRouterMethod<R extends NitroFetchRequest> = _AvailableRouterMethod<R> | Uppercase<_AvailableRouterMethod<R>>;
+type FetchResult<ReqT extends NitroFetchRequest, M extends AvailableRouterMethod<ReqT>> = TypedInternalResponse<ReqT, unknown, Lowercase<M>>;
+type KeysOf<T> = Array<T extends T ? (keyof T extends string ? keyof T : never) : never>;
 
-/* super complex type but needed for the api type infers */
 export function useKeskusFetch<
-  ResT = void,
-  ErrorT = FetchError,
   ReqT extends NitroFetchRequest = NitroFetchRequest,
-  Method extends AvailableRouterMethod<ReqT> = 'get' extends AvailableRouterMethod<ReqT> ? 'get' : AvailableRouterMethod<ReqT>,
+  ResT = void,
+  Method extends AvailableRouterMethod<ReqT> = ResT extends void
+    ? 'get' extends AvailableRouterMethod<ReqT>
+      ? 'get'
+      : AvailableRouterMethod<ReqT>
+    : AvailableRouterMethod<ReqT>,
   _ResT = ResT extends void ? FetchResult<ReqT, Method> : ResT,
-  Transform extends (res: _ResT) => any = (res: _ResT) => _ResT,
-  PickKeys extends KeyOfRes<Transform> = KeyOfRes<Transform>
->(
-  request: Ref<ReqT> | ReqT | (() => ReqT),
-  options?: UseFetchOptions<_ResT, Transform, PickKeys, ReqT> & { redirectOnError?: boolean }
-): AsyncData<PickFrom<ReturnType<Transform>, PickKeys>, ErrorT | null> {
+  DataT = _ResT,
+  PickKeys extends KeysOf<DataT> = KeysOf<DataT>,
+  DefaultT = null,
+>(url: Ref<ReqT> | ReqT | (() => ReqT), opts?: UseFetchOptions<_ResT, DataT, PickKeys, DefaultT, ReqT, Method>) {
   store.setLoading(true);
-  const cookieHeaders = useRequestHeaders(['cookie']);
-  const rsp = useFetch(request, {
-    ...options,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    onRequest({ request, options }) {
-      if (process.server) {
-        options.headers = cookieHeaders as Record<string, string>;
-      }
-    },
-  } as UseFetchOptions<_ResT, Transform, PickKeys, ReqT>);
-  return rsp
-    .catch((e: any) => {
-      console.error('useKeskusFetch error', e);
-      if (options?.redirectOnError !== false) {
-        if (e instanceof FetchError && e.statusCode === 401) {
-          // redirect to login
-          if (process.client && useRoute().path !== Routes.LOGIN) {
-            useRouter().push({ path: Routes.LOGIN, query: { initial: useRoute().path, from: 'fetch', err: 401 } });
-          }
-        } else if (e instanceof FetchError && e.statusCode === 400) {
-          // bad request
-          if (process.client && useRoute().path !== Routes.MAIN) {
-            useRouter().push({ path: Routes.MAIN, query: { err: 400 } });
-          }
-        }
-      }
-      throw e;
-    })
-    .finally(() => {
-      store.setLoading(false);
-    }) as AsyncData<PickFrom<ReturnType<Transform>, PickKeys>, ErrorT | null>;
+  const rsp = useFetch(url, {
+    onResponseError: useErrorHandling,
+    onResponse: () => store.setLoading(false),
+    ...opts,
+    headers: { ...(useRequestHeaders() as Record<string, string>), ...opts?.headers },
+  });
+  return rsp;
 }

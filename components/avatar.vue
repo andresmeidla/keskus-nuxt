@@ -15,7 +15,7 @@
             ['w-[64px]']: size === 'xl',
           }"
         >
-          <img :src="url" :alt="displayName" />
+          <NuxtImg :src="url" :alt="displayName" />
         </div>
       </div>
       <template #tooltip>
@@ -28,9 +28,7 @@
 </template>
 <script setup lang="ts">
 import gravatarUrl from 'gravatar-url';
-import { PropType } from 'vue';
-
-import { UserInfo } from '~~/server/lib/entity-types';
+import { type UserInfo } from '@/server/lib/entity-types';
 
 const props = defineProps({
   user: {
@@ -62,7 +60,7 @@ const defaultUrl = computed(
   () =>
     `https://ui-avatars.com/api/${props.user.firstname.length > 0 ? props.user.firstname[0] : 'X'}+${
       props.user.lastname.length ? props.user.lastname[0] : 'X'
-    }/64/0E7490/fff`
+    }/64/0E7490/fff`,
 );
 const url = computed(() => gravatarUrl(props.user.email || '', { size: 64, default: defaultUrl.value }));
 const displayName = computed(() => userDisplayName(props.user));

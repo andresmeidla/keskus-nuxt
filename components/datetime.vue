@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { dateFormatted, dateFromNow } from '~~/lib/utils';
+import { dateFormatted, dateFromNow } from '~/lib/utils';
 
 const props = defineProps({
   date: {

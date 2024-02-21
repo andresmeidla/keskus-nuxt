@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
     event,
     z.object({
       eventId: z.coerce.number(),
-    })
+    }),
   );
   return prisma.$queryRaw<
     { id: number; userId: number; eventId: number; createdAt: string; firstname: string; lastname: string; nickname: string; email: string }[]
@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
         "Users".id = "Comments"."userId"
       where
         "Comments"."eventId" = ${params.eventId}
-      order by 
+      order by
         "Comments"."userId",
         "Comments"."createdAt" desc
       ) as c

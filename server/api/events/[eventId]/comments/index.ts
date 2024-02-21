@@ -1,6 +1,6 @@
 import { z, zh } from 'h3-zod';
 
-import { DefaultUserAttributes } from '~~/server/lib/entity-types';
+import { DefaultUserAttributes } from '~/server/lib/entity-types';
 
 export type Pagination = {
   page: number;
@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     event,
     z.object({
       eventId: z.coerce.number(),
-    })
+    }),
   );
   const comments = await prisma.comment.findMany({
     where: {

@@ -27,10 +27,6 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
-
-import { store } from '~~/store';
-
 type EventsEndpointRetType = Awaited<ReturnType<typeof keskusFetch<'/api/events'>>>;
 type EventRetType = EventsEndpointRetType['events'][number];
 type EventLikeRetType = EventRetType['eventLikes'][number];
@@ -50,13 +46,15 @@ const props = defineProps({
   },
 });
 
+const { userId, user } = useAuth();
+
 const localEventLikes = computed({
   get: () => props.eventLikes,
   set: () => {},
 });
 
 const userLike = computed(() => {
-  return localEventLikes.value.find((l) => l.userId === store.userId);
+  return localEventLikes.value.find((l) => l.userId === userId.value);
 });
 
 const likeUsers = computed(() => {
@@ -65,7 +63,7 @@ const likeUsers = computed(() => {
 
 async function like() {
   if (userLike.value) {
-    const likeIndex = localEventLikes.value.findIndex((l) => l.userId === store.userId);
+    const likeIndex = localEventLikes.value.findIndex((l) => l.userId === userId.value);
     if (likeIndex !== -1) {
       localEventLikes.value.splice(likeIndex, 1);
     }
@@ -73,16 +71,14 @@ async function like() {
     // add a custom like object to the array
     // or remove it if it already exists
     // so that the UI updates immediately, then make a request to the server
-    const like = {
-      id: 0,
-      userId: store.userId,
-      user: store.user,
+    localEventLikes.value.push({
+      userId: userId.value as number,
+      user: user.value as EventLikeRetType['user'],
       eventId: props.eventId,
       dislike: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    } as EventLikeRetType;
-    localEventLikes.value.push(like);
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
   }
   await keskusFetch(`/api/events/${props.eventId}/like`, { method: 'POST', body: {} });
   // localEventLikes.value = await keskusFetch(`/api/events/${props.eventId}/likes`);

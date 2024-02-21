@@ -41,8 +41,8 @@
             </div>
           </div>
           <div class="flex w-full flex-col items-center justify-start gap-2">
-            <ClientOnly>
-              <Editor v-model="body" placeholder="Kirjeldus? *" />
+            <ClientOnly fallback-tag="div" fallback="Loading editor...">
+              <Editor v-model="body" placeholder="Kirjeldus? *" :validation-error="showErrors && !bodyValid" />
             </ClientOnly>
             <button class="btn btn-primary" :disabled="saving" @click="updateEvent">Muuda</button>
           </div>
@@ -67,9 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
-
-import { purifyHtml } from '~~/lib/utils';
+import { purgeHtml, purifyHtml } from '@/lib/utils';
 
 type EndpointEvent = NonNullable<NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/`>>>>>;
 type EndpointComment = NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/comments/`>>>>[number];
@@ -80,6 +78,7 @@ const props = defineProps({
     required: true,
   },
 });
+const { userId } = useAuth();
 
 const emit = defineEmits(['updated']);
 
@@ -102,10 +101,10 @@ const body = computed({
   },
 });
 const purifiedBody = computed(() => purifyHtml(props.event.body || ''));
-const isUserOwner = computed(() => props.event.user.id === getUser());
+const isUserOwner = computed(() => props.event.user.id === userId.value);
 const headlineValid = computed(() => editableEvent.value.headline.length >= 3);
-// const purgedBody = computed(() => purgeHtml(purifiedBody.value || ''));
-// const bodyValid = computed(() => purgedBody.value.length >= 3);
+const purgedBody = computed(() => purgeHtml(purifiedBody.value || ''));
+const bodyValid = computed(() => purgedBody.value.length >= 1);
 
 async function fetchComments() {
   try {
@@ -117,7 +116,7 @@ async function fetchComments() {
 }
 
 async function updateEvent() {
-  if (!headlineValid.value) {
+  if (!headlineValid.value || !bodyValid.value) {
     showErrors.value = true;
     return;
   }

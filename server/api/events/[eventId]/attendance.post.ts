@@ -1,20 +1,20 @@
 import { zh } from 'h3-zod';
 import { z } from 'zod';
 
-import { AttendanceState } from '~~/server/lib/entity-types';
+import { AttendanceState } from '~/server/lib/entity-types';
 
 export default defineEventHandler(async (event) => {
   const params = await zh.useValidatedParams(
     event,
     z.object({
       eventId: z.coerce.number(),
-    })
+    }),
   );
   const body = await zh.useValidatedBody(
     event,
     z.object({
       state: z.nativeEnum(AttendanceState),
-    })
+    }),
   );
   const userId = event.context.auth.id as number;
   const attendance = await prisma.eventAttendance.findFirst({

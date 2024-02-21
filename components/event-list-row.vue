@@ -21,10 +21,6 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
-
-import { store } from '~~/store';
-
 type EventsEndpointRetType = Awaited<ReturnType<typeof keskusFetch<'/api/events'>>>;
 
 const props = defineProps({
@@ -33,9 +29,10 @@ const props = defineProps({
     required: true,
   },
 });
+const { userId } = useAuth();
 
 const eventLink = ref<HTMLSpanElement | null>(null);
 
-const userInteraction = computed(() => props.event.eventInteractions.find((interaction) => interaction.userId === store.userId));
+const userInteraction = computed(() => props.event.eventInteractions.find((interaction) => interaction.userId === userId.value));
 const isNewEvent = computed(() => !userInteraction.value);
 </script>

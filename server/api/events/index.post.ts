@@ -1,10 +1,9 @@
-import { Event, User } from '@prisma/client';
+import type { Event, User } from '@prisma/client';
 import gravatarUrl from 'gravatar-url';
 import { zh } from 'h3-zod';
-import { createTransport, SendMailOptions } from 'nodemailer';
+import { createTransport, type SendMailOptions } from 'nodemailer';
 import { z } from 'zod';
-
-import { purgeHtml, purifyHtml } from '~~/lib/utils';
+import { purgeHtml, purifyHtml } from '~/lib/utils';
 
 type AvatarUser = Pick<User, 'firstname' | 'lastname' | 'email' | 'nickname'>;
 function uiAvatarUrl(user: AvatarUser, size = 64) {
@@ -26,6 +25,7 @@ function generateAvatar(user: AvatarUser, size = 64) {
     const img = `<img alt="pilt" src="${generateGravatarUrl(user, size)}" style="margin:0; padding:0; border:none; display:block;" border="0" />`;
     return img;
   } catch (err: any) {
+    // eslint-disable-next-line no-console
     console.error(`Failed to generate avatar for ${JSON.stringify(user)}:`, err);
   }
   return '';
@@ -34,10 +34,11 @@ function generateAvatar(user: AvatarUser, size = 64) {
 function generateAvatarAndName(user: AvatarUser) {
   try {
     const avatarAndName = `<table style="text-align:center"><tr><td>${generateAvatar(user)}</td></tr><tr><td><span style="font-weight:bolder">${generateName(
-      user
+      user,
     )}</td></tr></table>`;
     return avatarAndName;
   } catch (err: any) {
+    // eslint-disable-next-line no-console
     console.error(`Failed to generate avatar and name for ${JSON.stringify(user)}:`, err);
   }
   return '';
@@ -83,10 +84,11 @@ function generateMailHtml(me: AvatarUser, keskusEvent: Event, cfg: ReturnType<ty
     <br>
   ${purifyHtml(keskusEvent.body || '')}
   </body>
-</html>  
+</html>
   `;
     return html;
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error('Failed to generate mail html', err);
   }
   return `<h3><a href="${cfg?.webAddress}/events/${keskusEvent?.id}">Keskusesse</a></h3>
@@ -101,7 +103,7 @@ export default defineEventHandler(async (event) => {
       headline: z.string().min(3).max(500),
       body: z.string().min(1).max(1000000),
       location: z.string().min(1).max(500).optional(),
-    })
+    }),
   );
   const userId = event.context.auth.id as number;
   const me = await prisma.user.findUniqueOrThrow({
@@ -158,6 +160,7 @@ export default defineEventHandler(async (event) => {
     // eslint-disable-next-line no-console
     console.log(`${generateName(me)} posted: "${keskusEvent.headline}". Email successfully sent to ${emailList.length} users`);
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error('Failed to send email', err);
   }
 

@@ -1,14 +1,10 @@
-import { withAnimations } from 'animated-tailwindcss';
-import daisyui from 'daisyui';
-
-const config = withAnimations({
-  mode: 'jit',
+/** @type {import('tailwindcss').Config} */
+export default {
   content: ['./components/*.{html,js,ts,vue}', './layouts/*.{html,js,ts,vue}', './pages/*.{html,js,ts,vue}', './app.vue'],
   plugins: [
-    require('prettier-plugin-tailwindcss'),
-    daisyui,
-    function ({ addBase, theme }: { addBase: any; theme: any }) {
-      function extractColorVars(colorObj: any, colorGroup = ''): any {
+    require('daisyui'),
+    function ({ addBase, theme }) {
+      function extractColorVars(colorObj, colorGroup = '') {
         return Object.keys(colorObj).reduce((vars, colorKey) => {
           const value = colorObj[colorKey];
 
@@ -22,6 +18,7 @@ const config = withAnimations({
         ':root': extractColorVars(theme('colors')),
       });
     },
+    'tailwindcss-animated',
   ],
   daisyui: {
     themes: [
@@ -40,6 +37,4 @@ const config = withAnimations({
       },
     ],
   },
-});
-
-export default config;
+};

@@ -7,8 +7,6 @@
 </template>
 
 <script setup lang="ts">
-import { type QuillEditor } from '@vueup/vue-quill';
-
 const toolbar = [
   ['bold', 'italic', 'underline', 'strike'], // toggled buttons
   ['blockquote', 'code-block'],
