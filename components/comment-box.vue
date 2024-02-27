@@ -10,7 +10,7 @@
     <template v-else>
       <div class="flex w-full flex-col justify-center gap-2 px-2">
         <ClientOnly fallback-tag="div" fallback="Loading editor...">
-          <Editor v-model="body" :focus="!isMobile" :validation-error="showErrors && !bodyValid"></Editor>
+          <Editor v-model="editableCommentBody" :focus="!isMobile" :validation-error="showErrors && !bodyValid"></Editor>
         </ClientOnly>
         <div class="flex justify-center">
           <button class="btn btn-primary" :disabled="saving" @click="updateComment">Muuda</button>
@@ -47,23 +47,10 @@ const edit = ref(false);
 const saving = ref(false);
 const showErrors = ref(false);
 
-const editableComment = computed({
-  get: () => props.comment,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  set: (value) => {
-    // emit('updated', value);
-  },
-});
-
-const body = computed({
-  get: () => props.comment.body || '',
-  set: (value) => {
-    editableComment.value.body = value;
-  },
-});
+const editableCommentBody = ref(props.comment.body || '');
 
 const isUserOwner = computed(() => props.comment.userId === userId.value);
-const purifiedBody = computed(() => purifyHtml(body.value));
+const purifiedBody = computed(() => purifyHtml(editableCommentBody.value));
 const purgedBody = computed(() => purgeHtml(purifiedBody.value || ''));
 const bodyValid = computed(() => purgedBody.value.length >= 1);
 
@@ -76,9 +63,9 @@ async function updateComment() {
     saving.value = true;
     await keskusFetch(`/api/events/${props.comment.eventId}/comments/${props.comment.id}`, {
       method: 'PATCH',
-      body: JSON.stringify({
-        body: body.value,
-      }),
+      body: {
+        body: editableCommentBody.value,
+      },
     });
     edit.value = false;
     emit('updated');

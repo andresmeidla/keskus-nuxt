@@ -52,22 +52,13 @@ const props = defineProps({
 });
 const { user, userId } = useAuth();
 
-const localCommentLikes = computed({
-  get: () => props.commentLikes,
-  set: () => {},
-});
-
-const userLike = computed(() => {
-  return localCommentLikes.value.find((l) => l.userId === userId.value);
-});
-
-const likeUsers = computed(() => {
-  return localCommentLikes.value.map((el) => userDisplayName(el.user));
-});
+const localCommentLikes = ref(props.commentLikes);
+const userLike = computed(() => localCommentLikes.value.find((l) => l.userId === userId.value));
+const likeUsers = computed(() => localCommentLikes.value.map((el) => userDisplayName(el.user)));
 
 async function like() {
   if (!userId) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' });
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized', fatal: true });
   }
   if (userLike.value) {
     const likeIndex = localCommentLikes.value.findIndex((l) => l.userId === userId.value);
@@ -88,6 +79,5 @@ async function like() {
     });
   }
   await keskusFetch(`/api/events/${props.eventId}/comments/${props.commentId}/like`, { method: 'POST', body: {} });
-  // localCommentLikes.value = await keskusFetch(`/api/events/${props.eventId}/comments/${props.commentId}/likes`);
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full flex-col gap-4">
+  <div v-if="event" class="flex w-full flex-col gap-4">
     <div class="relative flex w-full flex-col items-center md:flex-row">
       <div class="flex w-52 flex-col items-center justify-start gap-2 p-2 pt-6 md:h-full">
         <Avatar :user="event.user" :date="new Date(event.createdAt)" size="xl"></Avatar>
@@ -21,7 +21,7 @@
         <template v-else>
           <div class="flex w-full items-center justify-center sm:justify-start">
             <input
-              v-model="editableEvent.headline"
+              v-model="event.headline"
               type="text"
               placeholder="Mis? *"
               class="input input-bordered w-full"
@@ -30,19 +30,19 @@
           </div>
           <div class="flex w-full flex-col items-center justify-start gap-2">
             <div class="input input-bordered flex w-full items-center justify-center gap-2">
-              <input v-model="editableEvent.location" class="bg-secondary w-full border-0 outline-none focus:border-0" placeholder="Kus?" />
+              <input v-model="event.location" class="bg-secondary w-full border-0 outline-none focus:border-0" placeholder="Kus?" />
               <GmapLink
                 :class="{
-                  'saturate-0': editableEvent.location?.length === 0,
-                  'animate-[heartBeat_1s_cubic-bezier(0,_0,_0.1,_1)_0.1s]': (editableEvent.location?.length || 0) > 0,
+                  'saturate-0': event.location?.length === 0,
+                  'animate-[heartBeat_1s_cubic-bezier(0,_0,_0.1,_1)_0.1s]': (event.location?.length || 0) > 0,
                 }"
-                :address="editableEvent.location || ''"
+                :address="event.location || ''"
               ></GmapLink>
             </div>
           </div>
           <div class="flex w-full flex-col items-center justify-start gap-2">
             <ClientOnly fallback-tag="div" fallback="Loading editor...">
-              <Editor v-model="body" placeholder="Kirjeldus? *" :validation-error="showErrors && !bodyValid" />
+              <Editor v-if="event.body" v-model="event.body" placeholder="Kirjeldus? *" :validation-error="showErrors && !bodyValid" />
             </ClientOnly>
             <button class="btn btn-primary" :disabled="saving" @click="updateEvent">Muuda</button>
           </div>
@@ -56,12 +56,12 @@
             </span>
           </div>
         </template>
-        <EventLike :event-id="event.id" :event-likes="event.eventLikes" size="xl" @updated="emit('updated')"></EventLike>
+        <EventLike :event-id="event.id" :event-likes="event.eventLikes" size="xl"></EventLike>
       </div>
     </div>
     <div class="divider my-0 mx-8"></div>
     <div class="flex w-full flex-row">
-      <EventAttendanceList :event-id="event.id" :event-attendances="event.eventAttendances" @updated="emit('updated')"></EventAttendanceList>
+      <EventAttendanceList :event-id="event.id" :event-attendances="event.eventAttendances"></EventAttendanceList>
     </div>
   </div>
 </template>
@@ -69,51 +69,24 @@
 <script setup lang="ts">
 import { purgeHtml, purifyHtml } from '@/lib/utils';
 
-type EndpointEvent = NonNullable<NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/`>>>>>;
-type EndpointComment = NonNullable<Awaited<ReturnType<typeof keskusFetch<`/api/events/${string}/comments/`>>>>[number];
-
 const props = defineProps({
-  event: {
-    type: Object as PropType<EndpointEvent>,
+  eventId: {
+    type: Number,
     required: true,
   },
 });
 const { userId } = useAuth();
 
-const emit = defineEmits(['updated']);
-
 const showErrors = ref(false);
 const saving = ref(false);
-const comments = ref<EndpointComment[]>([]);
 const edit = ref(false);
+const { data: event, refresh: refreshEvent } = await useKeskusFetch(`/api/events/${props.eventId}`);
 
-const editableEvent = computed({
-  get: () => props.event,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  set: (value) => {
-    // emit('updated', value);
-  },
-});
-const body = computed({
-  get: () => editableEvent.value.body || '',
-  set: (value) => {
-    editableEvent.value.body = value;
-  },
-});
-const purifiedBody = computed(() => purifyHtml(props.event.body || ''));
-const isUserOwner = computed(() => props.event.user.id === userId.value);
-const headlineValid = computed(() => editableEvent.value.headline.length >= 3);
+const purifiedBody = computed(() => purifyHtml(event.value?.body || ''));
+const isUserOwner = computed(() => event.value?.user.id === userId.value);
+const headlineValid = computed(() => (event.value?.headline.length || 0) >= 3);
 const purgedBody = computed(() => purgeHtml(purifiedBody.value || ''));
 const bodyValid = computed(() => purgedBody.value.length >= 1);
-
-async function fetchComments() {
-  try {
-    const rsp = await keskusFetch(`/api/events/${props.event.id}/comments`);
-    comments.value = rsp;
-  } catch (err: any) {
-    useToastError(err);
-  }
-}
 
 async function updateEvent() {
   if (!headlineValid.value || !bodyValid.value) {
@@ -122,23 +95,21 @@ async function updateEvent() {
   }
   try {
     saving.value = true;
-    await keskusFetch(`/api/events/${props.event.id}`, {
+    await keskusFetch(`/api/events/${props.eventId}`, {
       method: 'PATCH',
-      body: JSON.stringify({
-        headline: editableEvent.value.headline,
-        body: body.value,
-        location: editableEvent.value.location,
-      }),
+      body: {
+        headline: event.value?.headline,
+        body: event.value?.body,
+        location: event.value?.location,
+      },
     });
     edit.value = false;
-    emit('updated');
+    refreshEvent();
   } catch (err: any) {
     useToastError(err);
   } finally {
     saving.value = false;
   }
 }
-
-await fetchComments();
 </script>
 <style scoped></style>

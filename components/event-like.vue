@@ -48,18 +48,9 @@ const props = defineProps({
 
 const { userId, user } = useAuth();
 
-const localEventLikes = computed({
-  get: () => props.eventLikes,
-  set: () => {},
-});
-
-const userLike = computed(() => {
-  return localEventLikes.value.find((l) => l.userId === userId.value);
-});
-
-const likeUsers = computed(() => {
-  return localEventLikes.value.map((el) => userDisplayName(el.user));
-});
+const localEventLikes = ref(props.eventLikes);
+const userLike = computed(() => localEventLikes.value.find((l) => l.userId === userId.value));
+const likeUsers = computed(() => localEventLikes.value.map((el) => userDisplayName(el.user)));
 
 async function like() {
   if (userLike.value) {
@@ -81,6 +72,5 @@ async function like() {
     });
   }
   await keskusFetch(`/api/events/${props.eventId}/like`, { method: 'POST', body: {} });
-  // localEventLikes.value = await keskusFetch(`/api/events/${props.eventId}/likes`);
 }
 </script>

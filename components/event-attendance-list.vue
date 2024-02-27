@@ -52,15 +52,8 @@ const props = defineProps({
 
 const { userId, user } = useAuth();
 
-const localEventAttendees = computed({
-  get: () => props.eventAttendances,
-  set: () => {},
-});
-
-const userAttendance = computed(() => {
-  return localEventAttendees.value.find((att) => att.userId === userId.value);
-});
-
+const localEventAttendees = ref(props.eventAttendances);
+const userAttendance = computed(() => localEventAttendees.value.find((att) => att.userId === userId.value));
 const attendanceMap = computed(() => {
   return localEventAttendees.value.reduce(
     (acc, cur) => {

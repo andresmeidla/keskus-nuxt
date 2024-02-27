@@ -1,7 +1,7 @@
 <template>
   <div class="flex w-full justify-center py-4 text-black">
     <div class="flex w-full flex-col gap-2 rounded-lg bg-gray-100 sm:w-4/5">
-      <EventView v-if="event" :event="eventObj" />
+      <EventView :event-id="eventId" />
       <div class="w-full">
         <CommentAdd v-if="eventId" :event-id="eventId" @comment-added="commentAdded"></CommentAdd>
       </div>
@@ -27,18 +27,8 @@ definePageMeta({
 const interact = () => keskusFetch(`/api/events/${eventId.value}/interact`, { method: 'post', body: {} });
 const eventId = computed(() => parseInt(useRoute().params.eventId as string));
 
-const { data: event, error: eventError } = await useKeskusFetch(`/api/events/${eventId.value}`);
 const { data: comments, refresh: refreshComments } = await useKeskusFetch(`/api/events/${eventId.value}/comments`);
-interact();
-
-const eventObj = computed<any>(() => {
-  if (event.value) {
-    return event.value;
-  }
-  return null;
-});
-
-useErrorHandling(eventError.value);
+await interact();
 
 async function commentAdded() {
   await Promise.all([refreshComments(), interact()]);

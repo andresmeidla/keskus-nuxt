@@ -56,16 +56,10 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
-const localValue = computed({
-  get: () => {
-    return props.modelValue;
-  },
-  set: (value) => {
-    emit('update:modelValue', value);
-  },
-});
+const localValue = ref(props.modelValue);
+watch([localValue], () => emit('update:modelValue', localValue.value));
 
-const editor = ref<any | null>(null);
+const editor = ref<any | null>(null); // not used
 onMounted(() => {
   const el = document.querySelector('.ql-editor');
   if (el) {

@@ -3,7 +3,7 @@
     <div class="join">
       <button class="btn join-item btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="first">«</button>
       <button class="btn join-item btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="previous">‹</button>
-      <button class="btn join-item btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all">Lk {{ localValue }} (Kokku {{ totalCount }})</button>
+      <button class="btn join-item btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all">Lk {{ pageNumber }} (Kokku {{ totalCount }})</button>
       <button class="btn join-item btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="next">›</button>
       <button class="btn join-item btn-primary hover:opacity-75 hover:shadow-lg hover:transition-all" @click="last">»</button>
     </div>
@@ -22,32 +22,29 @@ const props = defineProps({
   },
 });
 
-const totalCount = computed(() => Math.ceil(props.pageCount));
-
-const localValue = computed({
-  get: () => Math.ceil(props.modelValue),
-  set: (value) => emit('update:modelValue', value),
-});
+const totalCount = ref(Math.ceil(props.pageCount));
+const pageNumber = ref(Math.ceil(props.modelValue));
 const emit = defineEmits(['update:modelValue']);
+watch([pageNumber], () => emit('update:modelValue', pageNumber.value));
 
 function first() {
-  localValue.value = 1;
+  pageNumber.value = 1;
 }
 
 function previous() {
-  if (localValue.value > 1) {
-    localValue.value = localValue.value - 1;
+  if (pageNumber.value > 1) {
+    pageNumber.value = pageNumber.value - 1;
   }
 }
 
 function next() {
-  if (localValue.value < totalCount.value) {
-    localValue.value = localValue.value + 1;
+  if (pageNumber.value < totalCount.value) {
+    pageNumber.value = pageNumber.value + 1;
   }
 }
 
 function last() {
-  localValue.value = totalCount.value;
+  pageNumber.value = totalCount.value;
 }
 </script>
 

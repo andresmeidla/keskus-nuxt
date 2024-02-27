@@ -21,7 +21,7 @@ export default defineComponent({
     },
     color: {
       type: String,
-      default: 'repeating-linear-gradient(to right, hsl(11deg 100% 52%) 0%, #d72700 50%, hsl(11deg 100% 62%) 100%) 0% 0% / 100%',
+      default: 'repeating-linear-gradient(to right, hsl(11deg 100% 52%) 0%, #2C977F 50%, hsl(11deg 100% 62%) 100%) 0% 0% / 100%',
     },
   },
   setup(props) {
